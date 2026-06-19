@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "samtec-QSE")(type "KiCad")(uri "${KIPRJMOD}/bias-switches-symlibs/samtec-QSE.kicad_sym")(options "")(descr ""))
+  (lib (name "iv-mux-rescue")(type "KiCad")(uri "C:/Users/eamon/OneDrive - McGill University/Brunner/03 - proj - ivcurve/mux-design/iv-mux/iv-mux-rescue.kicad_sym")(options "")(descr ""))
+)

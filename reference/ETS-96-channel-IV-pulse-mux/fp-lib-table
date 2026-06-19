@@ -1,0 +1,6 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "samtec-footprints")(type "KiCad")(uri "${KIPRJMOD}/samtec-footprints.pretty")(options "")(descr ""))
+  (lib (name "passthrough")(type "KiCad")(uri "${KIPRJMOD}/passthrough.pretty")(options "")(descr ""))
+  (lib (name "iv-mux")(type "KiCad")(uri "${KIPRJMOD}/iv-mux.pretty")(options "")(descr ""))
+)

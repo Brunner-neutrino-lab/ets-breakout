@@ -1,0 +1,11 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Treat binary assets as binary (no EOL munging / diff noise)
+*.pdf  binary
+*.png  binary
+*.svg  binary
+*.zip  binary
+*.step binary
+*.stp  binary
+*.drl  binary

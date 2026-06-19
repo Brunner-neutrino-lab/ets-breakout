@@ -1,0 +1,24 @@
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# kicad local settings / caches / backups / autosave
+*.kicad_prl
+*-backups/
+fp-info-cache
+_autosave-*
+*.lck
+*-bak
+*.kicad_pcb-bak
+*.kicad_sch-bak
+
+# stray verification reports (kicad-cli dumps these into the cwd)
+*-drc.rpt
+*-drc.json
+*-erc.rpt
+*-erc.json
+*.net
+
+# NOTE: boards/**/fab/, *-fab.zip and routed-top.pdf are deliverables — tracked on purpose.
+# The read-only upstream snapshot under reference/ keeps its own .gitignore.

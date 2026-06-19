@@ -1,0 +1,62 @@
+# For PCBs designed using KiCad: http://www.kicad-pcb.org/
+# Format documentation: http://kicad-pcb.org/help/file-formats/
+
+# Temporary files
+*.000
+*.bak
+*.*-bak
+*.bck
+*.kicad_pcb-bak
+*~
+_autosave-*
+\#auto_saved_files#
+*.tmp
+*-rescue.lib
+*-save.pro
+*-save.kicad_pcb
+_saved_*
+
+# lock files
+*.lck
+
+# local settings
+*.kicad_prl
+
+# backups
+*backups/*
+
+# log files
+*.log
+
+# outputs
+*.pdf
+*.step
+gerb*/*
+
+# on the verge of being deleted
+delete-me/*
+
+# Footprint cache
+fp-info-cache
+
+# Netlist files (exported from Eeschema)
+*.net
+
+# Autorouter files (exported from Pcbnew)
+*.dsn
+*.ses
+
+# Exported BOM files (and stuff to import them)
+*.xml
+*.csv
+*.xls*
+
+# Gerber and flatcam files
+gerber/*
+flatcam/*
+
+# Archive for sending
+*.zip
+
+# place to put stuff to be ignored
+ignore-me/*

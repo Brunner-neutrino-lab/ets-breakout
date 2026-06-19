@@ -1,0 +1,122 @@
+# Session handoff — ETS per-channel breakout boards
+
+Report from the development session that built `ets-breakout/`. Intended for a
+"manager" session reorganizing the whole working directory.
+
+> **Historical record.** The reorganization this report recommended (§5–§6) has
+> since been carried out: `ets-breakout/` is now its own standalone git repo, the
+> upstream clone is a de-gitted read-only snapshot under `reference/`, and the SMP
+> project is a separate sibling repo. Paths below describe the *old* layout.
+
+## 1. What this session built
+
+Three PCBs that **replace the broken `iv-pulse-mux` board** in the Brunner-lab
+**ETS-96-channel-IV-pulse-mux** system with a *passive per-channel breakout*. Each
+board mates the detector-side **QSE-040-01-L-D-A** socket and fans every channel out
+to its own coax jack:
+
+| Board | Jacks (25 each) | Part | Status |
+|-------|-----------------|------|--------|
+| A | MCX × 25 | Samtec MCX-J-P-H-RA-TH1 (DK SAM10607-ND) | DRC 0/0, fab-ready |
+| B | SMA × 25 | Amphenol RF 901-143-6RFX (DK ARFX1232-ND) | DRC 0/0, fab-ready |
+| C | U.FL × 25 | Hirose U.FL-R-SMT-1(10) | DRC 0/0, fab-ready |
+
+25 break-outs = 24 `SIPM_K0..K23` + `IV`. 12 K-channels bundle to flange 1 (one edge),
+12 to flange 2 (other edge), IV to flange 3. 4-layer, 50 Ω microstrip on PCBWay default
+4-layer stackup, GND pours all layers + stitching, 4× M3 holes. All footprints are
+datasheet-verified.
+
+**Everything is generated from one source of truth, `pinout.py`** — no hand placement.
+Pipeline (KiCad 10 bundled Python):
+```
+gen_board.py [mcx|sma|ufl]   placement + nets + outline + holes  (imports pinout.py)
+finalize_board.py <pcb>      4-layer stackup + 50Ω routes + GND zones + stitching
+fill_zones.py <pcb>          fill pours (separate pass; in-memory fill segfaults)
+kicad-cli pcb drc / export   verify + gerbers/drill/pos ; make_bom.py for BOM
+```
+
+## 2. Key decisions (with rationale)
+
+- **Source repo identification.** The repo Lucas named (`ETS-96-channel-IV-pulse-mux`)
+  is the right one; the public GitHub `IV-MUX-public` is a *different, older* board —
+  don't conflate. The authoritative QSE-040 (J5) pin→net map was extracted from the
+  upstream schematic **netlist** (`kicad-cli sch export netlist`), not eyeballed.
+- **QSE-040 is carried on the new board** (same socket the mux used), mating the existing
+  QTE-040 upstream. Confirmed with Lucas.
+- **Flexible 12/12 channel→flange split** (Lucas's call). The connector's two pin rows
+  are asymmetric (16 channels one row, 8 the other), so a 12/12 split has a hard floor of
+  **4 nets crossing** the connector (routed on the bottom layer). The generator computes
+  the optimal split from pad geometry to hit that floor.
+- **Routing primitive = escape + single straight diagonal + straight into pad.** Monotonic
+  fans are planar this way. (Vertical-bus and nested-bus fan-outs were tried and both
+  introduced crossings — diagonal is correct here.)
+- **IV jack** ended up inline on one edge (a center-top position had no clean routing
+  lane). Still a separate connector cabled to flange 3.
+- **Trace width 0.34 mm ≈ 50 Ω** microstrip on the PCBWay default 4-layer; `EDGE_GAP`
+  widened to 26 mm so the end-channel fan diagonals stay shallow enough to clear at width.
+  Recommend ordering as **controlled impedance** so PCBWay tunes to their exact stackup.
+- **U.FL** = low-voltage use only (rated ~60 V vs bias up to ~70 V); noted, Lucas accepted.
+
+## 3. Status / what's verified vs assumed
+
+- All three boards: **0 DRC violations, 0 unconnected.** Fab packages
+  (`boards/board-*/...-fab.zip`) = gerbers (4 copper + mask/silk/edge) + Excellon drill +
+  placement CSV + BOM CSV.
+- All four footprints datasheet-verified (MCX vs Samtec drawing rev H, archived in
+  `docs/datasheets/`; SMA + U.FL from KiCad lib; QSE-040 from the ETS repo).
+- **Open items (housekeeping, not blocking):** (a) no schematic/netlist — boards are built
+  directly from `pinout.py`, which is unconventional; (b) MCX signal pin assumed centered
+  in the ground square (drawing shows no offset); (c) impedance is nominal — confirm with
+  PCBWay's stackup; (d) the `MCX-J-P-H-RA-TH1` 3D model isn't attached (cosmetic).
+
+## 4. `ets-breakout/` layout (clean, self-contained)
+
+```
+ets-breakout/
+  pinout.py                      SINGLE SOURCE OF TRUTH (QSE-040 J5 pin->net, breakout list)
+  tests/test_pinout.py           sanity + self-consistency checks
+  tools/  gen_board.py finalize_board.py fill_zones.py make_bom.py
+  lib/ets-breakout.pretty/       4 verified footprints (QSE-040, MCX, SMA, U.FL)
+  docs/datasheets/               Samtec MCX drawing rev H
+  boards/board-{A-mcx,B-sma,C-ufl}/   .kicad_pcb/.kicad_pro + renders + *-fab.zip
+  README.md                      full pipeline + status
+```
+
+## 5. The directory problem the manager should fix
+
+The working dir currently mixes **three unrelated things** at the top level:
+
+1. **The original SMP-feedthrough project** (different deliverable): `CLAUDE.md`,
+   `smp-adapter-boards-brief.md`, `README.md`, `boards/`, `geometry/`, `lib/`, `tools/`,
+   `tests/`, `docs/`, `models/`, `out/`, `MCX/`, and stray top-level reports
+   (`board-A-mcx-drc.rpt`, `board-B-ufl-*.rpt/json`, `board-A-mcx-erc.rpt`).
+2. **A clone of the upstream reference repo** `ETS-96-channel-IV-pulse-mux/` — **has its
+   own nested `.git`** (messy inside the parent repo). It was the source of the pinout.
+3. **This session's project** `ets-breakout/` (self-contained).
+
+⚠️ **Name collision:** the SMP project's boards are *also* named `board-A-mcx` and
+`board-B-ufl`; this project has `board-A-mcx`, `board-B-sma`, `board-C-ufl`. Two different
+"board-A-mcx" exist. Keep them namespaced by project directory.
+
+Other cruft to clean: `ets-breakout/__pycache__/`, `ets-breakout/board-*-drc.rpt` (kicad-cli
+dumps to CWD), redundant renders in `board-A-mcx/` (`placement-A.svg`, `routed-A-*.pdf`,
+keep `routed-top.pdf`). No `.gitignore` in `ets-breakout/`.
+
+## 6. Recommended organization
+
+- **Separate the two board projects into top-level directories** (or two repos):
+  `smp-feedthrough/` (the original) and `ets-breakout/` (this one). They share *nothing*
+  functionally and the name collision alone justifies the split. `ets-breakout/` is
+  already self-contained and can move as-is.
+- **The upstream `ETS-96-channel-IV-pulse-mux/` clone:** the data we needed is already
+  captured (`ets-breakout/pinout.py` + archived datasheet). Recommend **removing its
+  nested `.git`** and keeping it under `reference/` (read-only) *or* dropping it entirely
+  and recording the upstream URL + commit in a README. Do **not** leave a nested git repo.
+- **Add `.gitignore`** for `__pycache__/`, `*.kicad_prl`, stray `*-drc.rpt/json`,
+  `out/`, and (decide) the generated `fab/` + renders since they regenerate from the tools.
+- **Keep `ets-breakout/` as-is internally** — it follows the SMP project's own conventions
+  (single-source-of-truth generator, local datasheet-verified footprints, test + DRC gate).
+- Consider a **top-level README** that names the projects and points into each.
+
+If the manager wants the boards rebuilt from scratch to confirm reproducibility:
+`for v in mcx sma ufl: gen_board.py $v -> finalize_board.py -> fill_zones.py -> drc`.

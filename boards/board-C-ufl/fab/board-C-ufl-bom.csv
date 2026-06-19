@@ -1,0 +1,4 @@
+Designators,Qty,Description,Manufacturer,MPN,Digi-Key,KiCad Footprint
+"IV, K0, K1, K10, K11, K12, K13, K14, K15, K16, K17, K18, K19, K2, K20, K21, K22, K23, K3, K4, K5, K6, K7, K8, K9",25,"U.FL jack, SMT  [<=60 V working voltage - low-bias use only]",Hirose,U.FL-R-SMT-1(10),,U.FL_Hirose_U.FL-R-SMT-1_Vertical
+"MH1, MH2, MH3, MH4",4,"M3 mounting hole, non-plated",,,,MountingHole_3.2mm_M3
+J5,1,QSE-040 board-to-board socket (mates detector QTE-040),Samtec,QSE-040-01-L-D-A,,SAMTEC_QSE-040-01-X-D-A
