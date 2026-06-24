@@ -64,22 +64,35 @@ def setup_layers(board):
 
 def channel_routes(board):
     """Escape each QSE pad horizontally past the connector, then a single straight
-    segment to its jack. Same-side fans route on F.Cu; nets that cross the
-    connector (and IV, to the north jack) route on B.Cu. Because each cluster's
-    pins and jacks are both sorted by position, the straight segments are
-    order-preserving and don't cross within a cluster."""
+    segment to its jack. The QSE is mounted on the opposite PCB face from the
+    jacks, so its pads sit on HOME (the QSE's own copper layer); same-side fans
+    stay on HOME and nets that cross the connector (and IV, to the north jack) hop
+    to OTHER (the other signal layer). Because each cluster's pins and jacks are
+    both sorted by position, the straight segments are order-preserving and don't
+    cross within a cluster."""
     fps = {fp.GetReference(): fp for fp in board.GetFootprints()}
     qse = fps["J5"]
     qse_by_net = {}
     for p in qse.Pads():
         qse_by_net.setdefault(p.GetNetname(), []).append(p)
+    # the QSE is SMD on a single face; route its escapes on whatever layer it is
+    # on (HOME) and reserve the other signal layer (OTHER) for the crossing fans.
+    smd_qse = [p for p in qse.Pads() if p.GetAttribute() == pcbnew.PAD_ATTRIB_SMD]
+    # NB: pad.GetLayer() reports a misleading "primary" layer for a flipped SMD pad;
+    # IsOnLayer() is the reliable test for which copper face the pad actually sits on.
+    on_back = bool(smd_qse) and smd_qse[0].IsOnLayer(pcbnew.B_Cu)
+    HOME = pcbnew.B_Cu if on_back else pcbnew.F_Cu
+    OTHER = pcbnew.F_Cu if HOME == pcbnew.B_Cu else pcbnew.B_Cu
     jack_by_net = {}
+    jack_center_by_net = {}   # net -> True if jack signal pad is enclosed (SMP -> centre via)
     for ref, fp in fps.items():
         if ref == "J5" or ref.startswith("REF"):
             continue
+        is_smp = "SMP" in str(fp.GetFPID().GetLibItemName())
         for p in fp.Pads():
             if p.GetPadName() == SIG_PAD and p.GetNetname():
                 jack_by_net[p.GetNetname()] = p
+                jack_center_by_net[p.GetNetname()] = is_smp
     xs = [p.GetPosition().x for p in qse.Pads()]
     qleft, qright = min(xs), max(xs)
     cx, cy = qse.GetPosition().x, qse.GetPosition().y
@@ -95,28 +108,30 @@ def channel_routes(board):
         jpos = jp.GetPosition()
         qp = min(qps, key=lambda p: (p.GetPosition() - jpos).EuclideanNorm())
         smd = jp.GetAttribute() == pcbnew.PAD_ATTRIB_SMD
-        nets.append((sig, jp.GetNet(), qp.GetPosition(), jpos, qps, smd))
+        center = jack_center_by_net.get(jp.GetNetname(), False)
+        nets.append((sig, jp.GetNet(), qp.GetPosition(), jpos, qps, smd, center))
 
     def classify(qpos, jpos):
         if abs(jpos.x - cx) < MM(3):
-            return "north", pcbnew.B_Cu
+            return "north", OTHER
         jack_east = jpos.x > cx
         return ("east" if jack_east else "west"), \
-               (pcbnew.F_Cu if (qpos.x > cx) == jack_east else pcbnew.B_Cu)
+               (HOME if (qpos.x > cx) == jack_east else OTHER)
 
     import collections
     groups = collections.defaultdict(list)
-    for sig, net, qpos, jpos, qps, smd in nets:
-        groups[classify(qpos, jpos)].append((net, qpos, jpos, qps, smd))
+    for sig, net, qpos, jpos, qps, smd, center in nets:
+        groups[classify(qpos, jpos)].append((net, qpos, jpos, qps, smd, center))
 
     for (edge, layer), grp in groups.items():
         grp.sort(key=lambda t: t[2].y)              # by jack y (monotonic fan)
-        for r, (net, qpos, jpos, qps, smd) in enumerate(grp):
-            # 1) escape clear of the connector pads, then drop to the routing layer
+        for r, (net, qpos, jpos, qps, smd, center) in enumerate(grp):
+            # 1) escape clear of the connector pads on the QSE's own layer, then
+            #    hop to OTHER for the crossing fans
             ex = (qright + esc) if qpos.x > cx else (qleft - esc)
             e0 = pcbnew.VECTOR2I(int(ex), qpos.y)
-            track(board, qpos, e0, pcbnew.F_Cu, net)
-            if layer == pcbnew.B_Cu:
+            track(board, qpos, e0, HOME, net)
+            if layer != HOME:
                 via(board, e0, net)
             # 2) one straight (monotonic -> planar) run to the jack-approach point,
             #    then straight into the signal pad between the grounds
@@ -127,8 +142,16 @@ def channel_routes(board):
                 ax = jpos.x + (appr if cx > jpos.x else -appr)
                 apos = pcbnew.VECTOR2I(int(ax), jpos.y)
             track(board, e0, apos, layer, net)
-            # SMD jack pad is F.Cu-only: pop a B.Cu run back up at the jack
-            if layer == pcbnew.B_Cu and smd:
+            if center:
+                # SMP centre signal pad is enclosed by the ground frame on all four
+                # sides -> no F.Cu approach. Run on B.Cu under the frame from the
+                # approach point and pop up into the pad with a centre via-in-pad.
+                if layer != pcbnew.B_Cu:
+                    via(board, apos, net)
+                track(board, apos, jpos, pcbnew.B_Cu, net)
+                via(board, jpos, net)
+            elif layer == pcbnew.B_Cu and smd:
+                # SMD jack pad is F.Cu-only: pop a B.Cu run back up at the jack
                 via(board, apos, net)
                 track(board, apos, jpos, pcbnew.F_Cu, net)
             else:
@@ -136,7 +159,7 @@ def channel_routes(board):
             # tie any extra QSE pads on this net (e.g. IV spans pins 40 & 42)
             for extra in qps:
                 if extra.GetPosition() != qpos:
-                    track(board, qpos, extra.GetPosition(), pcbnew.F_Cu, net)
+                    track(board, qpos, extra.GetPosition(), HOME, net)
 
 
 def gnd_zones(board):

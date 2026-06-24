@@ -864,7 +864,7 @@
 		(uuid "2f9b5508-120a-49a0-a6e2-dcf48b07fef6")
 	)
 	(embedded_fonts no)
-	(model "${KIPRJMOD}/samtec-footprints.pretty/QSE-040-01-L-D-A.stp"
+	(model "${KIPRJMOD}/../../models/QSE-040-01-L-D-A.stp"
 		(offset
 			(xyz 0 0 0)
 		)

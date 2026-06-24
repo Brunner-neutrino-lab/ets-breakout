@@ -1,4 +1,4 @@
 Designators,Qty,Description,Manufacturer,MPN,Digi-Key,KiCad Footprint
-"IV, K0, K1, K10, K11, K12, K13, K14, K15, K16, K17, K18, K19, K2, K20, K21, K22, K23, K3, K4, K5, K6, K7, K8, K9",25,"MCX jack, right-angle through-hole, 50 ohm",Samtec,MCX-J-P-H-RA-TH1,SAM10607-ND,Samtec_MCX-J-P-H-RA-TH1
+"IV, K0, K1, K10, K11, K12, K13, K14, K15, K16, K17, K18, K19, K2, K20, K21, K22, K23, K3, K4, K5, K6, K7, K8, K9",25,"MCX jack, straight (vertical) surface-mount, 50 ohm",Samtec,MCX-J-P-H-ST-SM1,,Samtec_MCX-J-P-X-ST-SM1
 "MH1, MH2, MH3, MH4",4,"M3 mounting hole, non-plated",,,,MountingHole_3.2mm_M3
 J5,1,QSE-040 board-to-board socket (mates detector QTE-040),Samtec,QSE-040-01-L-D-A,,SAMTEC_QSE-040-01-X-D-A

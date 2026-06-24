@@ -12,12 +12,14 @@ import pcbnew
 PARTS = {
     "SAMTEC_QSE-040-01-X-D-A":
         ("QSE-040 board-to-board socket (mates detector QTE-040)", "Samtec", "QSE-040-01-L-D-A", ""),
-    "Samtec_MCX-J-P-H-RA-TH1":
-        ("MCX jack, right-angle through-hole, 50 ohm", "Samtec", "MCX-J-P-H-RA-TH1", "SAM10607-ND"),
+    "Samtec_MCX-J-P-X-ST-SM1":
+        ("MCX jack, straight (vertical) surface-mount, 50 ohm", "Samtec", "MCX-J-P-H-ST-SM1", ""),
     "SMA_Amphenol_901-143_Horizontal":
         ("SMA jack, right-angle through-hole, 50 ohm", "Amphenol RF", "901-143-6RFX", "ARFX1232-ND"),
     "U.FL_Hirose_U.FL-R-SMT-1_Vertical":
         ("U.FL jack, SMT  [<=60 V working voltage - low-bias use only]", "Hirose", "U.FL-R-SMT-1(10)", ""),
+    "SMP_Amphenol_SMP-MSSB-PCS_Vertical":
+        ("SMP male jack, vertical SMT smooth-bore, 50 ohm  [centre via-in-pad - plug/cap or hand-solder]", "Amphenol RF", "SMP-MSSB-PCS", ""),
     "MountingHole_3.2mm_M3":
         ("M3 mounting hole, non-plated", "", "", ""),
 }

@@ -33,10 +33,17 @@ GND_NET = pinout.GROUND_NET
 SIG_PAD, GND_PAD = "1", "2"
 
 # native cable-exit unit vector per footprint, edge jack pitch (mm), placement style
+# style "edge" = right-angle jack, cable exits sideways (rotate exit->edge normal).
+# style "flat" = vertical SMD jack, cable exits perpendicular (off the board face).
 VARIANTS = {
-    "mcx": dict(fp="Samtec_MCX-J-P-H-RA-TH1",            exit=(-1, 0), pitch=9.0, style="edge"),
+    # straight (vertical) SMD MCX jack: cable exits up; signal pad reachable between
+    # the four corner grounds, so it routes like U.FL (smd, no centre via).
+    "mcx": dict(fp="Samtec_MCX-J-P-X-ST-SM1",           exit=(0, 1),  pitch=9.0, style="flat"),
     "sma": dict(fp="SMA_Amphenol_901-143_Horizontal",   exit=(0, -1), pitch=10.0, style="edge"),
     "ufl": dict(fp="U.FL_Hirose_U.FL-R-SMT-1_Vertical",  exit=(0, 1),  pitch=6.0, style="flat"),
+    # SMP male SMD: 5.21 mm square ground frame fully encloses the centre signal
+    # pad, so it needs a roomier pitch and centre-via entry (see finalize_board.py).
+    "smp": dict(fp="SMP_Amphenol_SMP-MSSB-PCS_Vertical", exit=(0, 1),  pitch=7.0, style="flat"),
 }
 
 EDGE_GAP = 26.0    # mm QSE edge -> jack column; long run keeps the fan diagonals
@@ -104,6 +111,10 @@ class Builder:
         for pin, netname in pinout.J5_PINOUT.items():
             padname = f"{pin:02d}" if isinstance(pin, int) else pin
             self.pad_net(qse, padname, netname)
+        # Mount the QSE on the opposite PCB face from the coax jacks: the detector
+        # plugs into the back, cables come off the front. Flip top<->bottom (mirror
+        # Y) so the pin columns stay on their sides; pad->net binding is preserved.
+        qse.Flip(qse.GetPosition(), False)
 
         # mean (x,y) of each broken-out signal's QSE pin(s), and QSE pad extents
         pp = {}
@@ -228,7 +239,7 @@ class Builder:
 def main():
     which = (sys.argv[1] if len(sys.argv) > 1 else "all").lower()
     todo = list(VARIANTS) if which == "all" else [which]
-    letter = {"mcx": "A", "sma": "B", "ufl": "C"}
+    letter = {"mcx": "A", "sma": "B", "ufl": "C", "smp": "D"}
     for v in todo:
         b = Builder(v).build()
         outdir = os.path.join(ROOT, "boards", f"board-{letter[v]}-{v}")

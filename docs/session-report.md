@@ -8,6 +8,37 @@ Report from the development session that built `ets-breakout/`. Intended for a
 > upstream clone is a de-gitted read-only snapshot under `reference/`, and the SMP
 > project is a separate sibling repo. Paths below describe the *old* layout.
 
+> **Update 2026-06-22 — Board D (SMP) added.** A fourth variant was generated with
+> the same pipeline: 25× **Amphenol SMP-MSSB-PCS** (SMP *male*, vertical SMT,
+> 50 Ω DC–18 GHz), footprint carried over from the sibling SMP-feedthrough project.
+> Unlike A/B/C, the SMP's center signal pad is enclosed by its ground frame on all
+> four sides, so `finalize_board.py` routes the channel on B.Cu under the frame and
+> enters through a **center via-in-pad** (gated on jacks whose footprint name
+> contains "SMP"). Board is 74 × 112 mm, **DRC 0/0**, all 25 signal pads via-verified;
+> fab package at `boards/board-D-smp/board-D-smp-fab.zip`. Fab note: order with
+> plugged/capped vias (or hand-solder) so the SMT joint doesn't wick into the via.
+
+> **Update 2026-06-22 — J5 moved to the back face (all boards).** The QSE-040 (J5)
+> is now mounted on the **opposite PCB face from the coax jacks** (J5 on B.Cu, jacks
+> on F.Cu): the detector plugs into the back, cables come off the front. `gen_board.py`
+> flips J5 after assigning nets; the pad→net binding is preserved, so connectivity is
+> unchanged. `finalize_board.py` was made face-agnostic — it detects which copper face
+> J5's SMD pads are on (via `IsOnLayer`, since `GetLayer()` lies for a flipped SMD pad)
+> and routes escapes on that HOME layer, hopping to the OTHER signal layer only for the
+> crossing fans. All four boards re-routed and re-exported: **DRC 0/0**, J5 = bottom and
+> all 25 jacks = top in the placement CSVs.
+
+> **Update 2026-06-22 — 3D models + Board A changed to straight MCX.** 3D STEP models
+> were attached: QSE-040 (from `reference/`), SMP-MSSB-PCS and the straight MCX (from the
+> sibling SMP-feedthrough project) live in `models/` and are referenced via
+> `${KIPRJMOD}/../../models/…`; U.FL uses KiCad's bundled model. SMA's 3D model was
+> skipped. **Board A now uses a straight (vertical) surface-mount MCX jack**
+> (`Samtec MCX-J-P-X-ST-SM1`, datasheet rev C) instead of the right-angle through-hole
+> part — cable exits straight up, flat placement, and the signal pad routes like U.FL
+> (SMD, signal reachable between the four corner grounds, no center via). The right-angle
+> MCX footprint and its datasheet were removed. Boards A & B re-routed and re-exported,
+> **DRC 0/0**. Straight-MCX orderable MPN (`MCX-J-P-H-ST-SM1`) is inferred — confirm.
+
 ## 1. What this session built
 
 Three PCBs that **replace the broken `iv-pulse-mux` board** in the Brunner-lab
