@@ -151,3 +151,13 @@ keep `routed-top.pdf`). No `.gitignore` in `ets-breakout/`.
 
 If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 `for v in mcx sma ufl: gen_board.py $v -> finalize_board.py -> fill_zones.py -> drc`.
+
+> **Update 2026-06-24 — Board D SMP changed to SMP-MSLD-PCS-20.** Swapped the
+> SMP-MSSB-PCS (enclosed centre pad) for **Amphenol RF SMP-MSLD-PCS-20** (vertical SMT,
+> 4.08 mm max height), imported from the user-supplied SnapMagic footprint/symbol/STEP
+> (pad `G` renamed `2`). Its signal is an **external tab** on one side of the body, so the
+> centre via-in-pad scheme is gone — it routes like the other flat SMD jacks. `_edge` now
+> rotates every flat jack so its signal pad faces the QSE, derived from the actual pad
+> geometry (U.FL -X edge, SMP-MSLD +Y tab, MCX centred), replacing the hard-coded U.FL
+> rotation; `finalize_board.py` dropped the SMP centre-via branch. Board D is 75 x 120 mm,
+> **DRC 0/0**, all 25 tabs verified facing inward; all four boards re-checked 0/0.

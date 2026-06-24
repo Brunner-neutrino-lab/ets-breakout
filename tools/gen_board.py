@@ -41,9 +41,10 @@ VARIANTS = {
     "mcx": dict(fp="Samtec_MCX-J-P-X-ST-SM1",           exit=(0, 1),  pitch=9.0, style="flat"),
     "sma": dict(fp="SMA_Amphenol_901-143_Horizontal",   exit=(0, -1), pitch=10.0, style="edge"),
     "ufl": dict(fp="U.FL_Hirose_U.FL-R-SMT-1_Vertical",  exit=(0, 1),  pitch=6.0, style="flat"),
-    # SMP male SMD: 5.21 mm square ground frame fully encloses the centre signal
-    # pad, so it needs a roomier pitch and centre-via entry (see finalize_board.py).
-    "smp": dict(fp="SMP_Amphenol_SMP-MSSB-PCS_Vertical", exit=(0, 1),  pitch=7.0, style="flat"),
+    # SMP vertical SMD (Amphenol SMP-MSLD-PCS-20): signal is an external tab on one
+    # side of the body, so it routes like U.FL (smd) once the jack is rotated to face
+    # its tab toward the QSE -- _edge does that. Body ~7 mm across -> 8 mm pitch.
+    "smp": dict(fp="SMP_Amphenol_SMP-MSLD-PCS-20",       exit=(0, 1),  pitch=8.0, style="flat"),
 }
 
 EDGE_GAP = 26.0    # mm QSE edge -> jack column; long run keeps the fan diagonals
@@ -181,12 +182,8 @@ class Builder:
         horiz = side in ("north", "south")          # step along X (else along Y)
         # order within the cluster by the pin coordinate to reduce crossing
         sigs = sorted(sigs, key=lambda s: self.padpos[s][0 if horiz else 1])
-        if self.cfg["style"] == "edge":
-            rot = self.rot_to(self.cfg["exit"], normal)
-        else:
-            # flat (U.FL): point the signal pad toward the QSE so the trace
-            # approaches it from the open side, clear of the U.FL keepout
-            rot = 180.0 if side == "west" else 0.0
+        flat = self.cfg["style"] != "edge"
+        rot = 0.0 if flat else self.rot_to(self.cfg["exit"], normal)
         e = self.qse_ext
         base = {"west": e["left"] - EDGE_GAP, "east": e["right"] + EDGE_GAP,
                 "north": e["top"] - EDGE_GAP, "south": e["bottom"] + EDGE_GAP}[side]
@@ -200,8 +197,43 @@ class Builder:
                 y = span0 + i * pitch
                 x = base + normal[0] * stag
             fp = self.add_fp(LIB, self.cfg["fp"], short(sig), x, y, rot)
+            if flat:
+                self._face_signal_to_qse(fp, side)  # aim the signal pad inward
             self.pad_net(fp, SIG_PAD, sig)
             self.pad_net(fp, GND_PAD, GND_NET)
+
+    def _sig_local(self, fp):
+        """Signal pad offset from the footprint origin (board units), as (dx, dy)."""
+        o = fp.GetPosition()
+        for p in fp.Pads():
+            if p.GetPadName() == SIG_PAD:
+                pp = p.GetPosition()
+                return pp.x - o.x, pp.y - o.y
+        return 0, 0
+
+    def _face_signal_to_qse(self, fp, side):
+        """Rotate a flat (vertical) jack so its signal pad points inward toward the
+        QSE -- the side the channel trace approaches from. Whatever direction the pad
+        sits in the footprint's own frame (U.FL: -X edge; SMP-MSLD: +Y tab), this aims
+        it at +X (west cluster) / -X (east cluster). Centre-pad parts (MCX) have no
+        preferred direction, so they keep the legacy orientation."""
+        vx, vy = self._sig_local(fp)
+        if vx * vx + vy * vy < MM(0.2) ** 2:        # signal pad ~centred (MCX)
+            fp.SetOrientationDegrees(180.0 if side == "west" else 0.0)
+            return
+        inward = 1.0 if side == "west" else -1.0    # +X toward QSE for west, -X for east
+        native = math.degrees(math.atan2(vy, vx))
+        want = 0.0 if side == "west" else 180.0
+        # pcbnew's rotation sign vs screen Y is fiddly; try both signs and keep the
+        # one that actually lands the pad on the inward side.
+        best_deg, best_score = 0.0, -1e18
+        for cand in (want - native, native - want):
+            fp.SetOrientationDegrees(cand)
+            sx, _ = self._sig_local(fp)
+            score = sx * inward
+            if score > best_score:
+                best_deg, best_score = cand, score
+        fp.SetOrientationDegrees(best_deg)
 
     def _outline_and_holes(self):
         # extents from pad positions (reliable) + margin -> rectangular Edge.Cuts.

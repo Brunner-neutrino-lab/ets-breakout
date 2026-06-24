@@ -9,11 +9,12 @@ of which board is open.
 |------|------|--------|--------|
 | QSE-040-01-L-D-A (J5) | `QSE-040-01-L-D-A.stp` | upstream `reference/` snapshot | **present** |
 | MCX-J-P-X-ST-SM1 (Board A) | `MCX-J-P-X-ST-SM1.step` | sibling SMP-feedthrough project | **present** |
-| SMP-MSSB-PCS (Board D) | `SMP-MSSB-PCS-NM.stp` | sibling SMP-feedthrough project | **present** |
-| U.FL-R-SMT-1 (Board C) | *(KiCad bundled)* | `${KICAD10_3DMODEL_DIR}/Connector_Coaxial.3dshapes/U.FL_Hirose_U.FL-R-SMT-1_Vertical.step` | **resolves** |
-| SMA 901-143-6RFX (Board B) | — | — | **skipped** (no 3D model) |
+| SMP-MSLD-PCS-20 (Board D) | `SMP-MSLD-PCS-20.stp` | Amphenol / SnapMagic | **present** |
+| U.FL-R-SMT-1 (Board C) | `U.FL_Hirose_U.FL-R-SMT-1_Vertical.step` | KiCad bundled lib (copied local) | **present** |
+| SMA 901-143-6RFX (Board B) | — | — | **gap** (vendor-gated) |
 
-Every footprint except SMA has a resolving model. SMA's 3D model was intentionally
-skipped; the footprint carries no `(model …)` line. If you ever want it, drop the vendor
-STEP into this folder and add a `(model "${KIPRJMOD}/../../models/<file>")` line to
+Every footprint except SMA has a local resolving model. The SMA STEP is behind a vendor
+login (Amphenol RF / SnapMagic / Ultra Librarian); its footprint carries no `(model …)`
+line. To fill it, drop the vendor STEP here as `SMA_Amphenol_901-143-6RFX.stp` and add a
+`(model "${KIPRJMOD}/../../models/SMA_Amphenol_901-143-6RFX.stp")` line to
 `lib/ets-breakout.pretty/SMA_Amphenol_901-143_Horizontal.kicad_mod`, then regenerate Board B.

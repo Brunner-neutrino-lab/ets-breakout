@@ -13,6 +13,10 @@ _autosave-*
 *.kicad_pcb-bak
 *.kicad_sch-bak
 
+# scratch / staging dirs used while importing vendor part files
+_tmp*/
+_stage*/
+
 # stray verification reports (kicad-cli dumps these into the cwd)
 *-drc.rpt
 *-drc.json

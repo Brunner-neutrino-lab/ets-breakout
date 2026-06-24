@@ -24,7 +24,7 @@ crossing fans.
 | A | 25× MCX | Samtec MCX-J-P-X-ST-SM1 (straight SMT) | DRC 0/0, fab-ready |
 | B | 25× SMA | Amphenol RF 901-143-6RFX | DRC 0/0, fab-ready |
 | C | 25× U.FL | Hirose U.FL-R-SMT-1(10) | DRC 0/0, fab-ready |
-| D | 25× SMP | Amphenol RF SMP-MSSB-PCS (male, vertical SMT) | DRC 0/0, fab-ready |
+| D | 25× SMP | Amphenol RF SMP-MSLD-PCS-20 (vertical SMT) | DRC 0/0, fab-ready |
 
 ## Iron rules
 
@@ -36,9 +36,10 @@ crossing fans.
 2. **Boards are generated, never hand-placed** (see pipeline below).
 3. **Footprints are local and datasheet-verified** ([`lib/ets-breakout.pretty/`](lib/ets-breakout.pretty/)).
    MCX is the straight SMT jack `MCX-J-P-X-ST-SM1`, checked against the Samtec drawing
-   rev C in [`docs/datasheets/`](docs/datasheets/); QSE-040 from the upstream repo; SMA +
-   U.FL from the KiCad library; MCX + SMP (`SMP-MSSB-PCS`, Amphenol outline rev D) carried
-   over from the sibling SMP-feedthrough project.
+   rev C in [`docs/datasheets/`](docs/datasheets/), carried over from the sibling
+   SMP-feedthrough project; QSE-040 from the upstream repo; SMA + U.FL from the KiCad
+   library; SMP (`SMP-MSLD-PCS-20`, Amphenol RF) is the SnapMagic land pattern, pad `G`
+   renamed to `2` to match the `1`=sig/`2`=gnd convention.
 4. **Upstream is reference-only.** [`reference/ETS-96-channel-IV-pulse-mux/`](reference/)
    is a read-only snapshot (de-gitted); see [`reference/UPSTREAM.md`](reference/UPSTREAM.md).
    Do not build from it.
@@ -65,10 +66,10 @@ pcbnew gotchas (shared with the SMP-feedthrough project):
 - Routing primitive = escape past the QSE pads → one straight diagonal → straight into
   the signal pad between grounds (monotonic fan ⇒ planar). The 12/12 channel→flange
   split is computed from pad geometry to hit the 4-net crossing floor (routed bottom).
-- **SMP exception:** its center signal pad is enclosed by the ground frame on all four
-  sides, so the channel can't enter on F.Cu. `finalize_board.py` detects SMP jacks and
-  runs the approach on B.Cu under the frame, popping up into the pad with a center
-  via-in-pad (recommend plugged/capped vias or hand-solder at assembly).
+- **Flat (vertical) jacks** (U.FL, straight MCX, SMP) are rotated by `_edge` so the
+  signal pad faces the QSE (the side the trace approaches from). The signal pad's native
+  direction varies per part (U.FL: -X edge; SMP-MSLD: +Y tab; MCX: centred), so the
+  rotation is derived from the actual pad geometry, not hard-coded.
 
 ## Repo layout
 
@@ -77,8 +78,10 @@ pinout.py                      SINGLE SOURCE OF TRUTH (QSE-040 J5 pin->net + bre
 tests/test_pinout.py           sanity + self-consistency checks (run: python tests/test_pinout.py)
 tools/  gen_board.py  finalize_board.py  fill_zones.py  make_bom.py
 lib/ets-breakout.pretty/       5 datasheet-verified footprints (QSE-040, MCX, SMA, U.FL, SMP)
-models/                        3D STEP models + README (QSE/SMP present, U.FL bundled; MCX/SMA = drop-in TODO)
-docs/datasheets/               Samtec MCX drawing rev H
+lib/ets-breakout.kicad_sym     5 schematic symbols (reference-only; project builds from pinout.py)
+models/                        3D STEP models + README (QSE/MCX/U.FL/SMP present; SMA = vendor-gated gap)
+docs/datasheets/               5 part datasheets (Samtec QSE + MCX, Amphenol SMA + SMP, Hirose U.FL)
+docs/BOM.md  docs/BOM.csv       consolidated master BOM + CAD-asset matrix (per-board BOMs in boards/*/fab/)
 docs/session-report.md         development history / decisions / rationale
 boards/board-{A-mcx,B-sma,C-ufl,D-smp}/   .kicad_pcb/.kicad_pro + routed-top.pdf + fab/ + *-fab.zip
 reference/                     read-only upstream snapshot (de-gitted) + UPSTREAM.md
@@ -93,8 +96,8 @@ reference/                     read-only upstream snapshot (de-gitted) + UPSTREA
 - **U.FL is low-voltage** (~60 V) vs bias up to ~70 V — use U.FL only on un-biased / low-V channels.
 - Open (housekeeping, non-blocking): no schematic/netlist (boards built directly
   from `pinout.py`); impedance is nominal until confirmed against the fab stackup;
-  **SMP uses center via-in-pad** (spec plugged/capped vias, or hand-solder, so the joint
-  doesn't wick); straight-MCX MPN (`MCX-J-P-H-ST-SM1`) is inferred from the family —
-  confirm the exact orderable jack PN.
-- 3D models: QSE-040, MCX (straight), SMP attached locally; U.FL via KiCad's bundled lib.
-  SMA has no 3D model (intentionally skipped). See [`models/README.md`](models/README.md).
+  straight-MCX MPN (`MCX-J-P-H-ST-SM1`) is inferred from the family — confirm the exact
+  orderable jack PN.
+- CAD assets (datasheet/footprint/symbol/3D) are collected per part — see
+  [`docs/BOM.md`](docs/BOM.md). 3D STEP models for QSE-040, MCX, U.FL, SMP are local in
+  `models/`; **SMA 3D is the only gap** (vendor-gated). Symbols are reference-only.

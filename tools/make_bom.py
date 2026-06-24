@@ -18,8 +18,8 @@ PARTS = {
         ("SMA jack, right-angle through-hole, 50 ohm", "Amphenol RF", "901-143-6RFX", "ARFX1232-ND"),
     "U.FL_Hirose_U.FL-R-SMT-1_Vertical":
         ("U.FL jack, SMT  [<=60 V working voltage - low-bias use only]", "Hirose", "U.FL-R-SMT-1(10)", ""),
-    "SMP_Amphenol_SMP-MSSB-PCS_Vertical":
-        ("SMP male jack, vertical SMT smooth-bore, 50 ohm  [centre via-in-pad - plug/cap or hand-solder]", "Amphenol RF", "SMP-MSSB-PCS", ""),
+    "SMP_Amphenol_SMP-MSLD-PCS-20":
+        ("SMP jack, vertical SMT, 50 ohm (4.08 mm max height)", "Amphenol RF", "SMP-MSLD-PCS-20", ""),
     "MountingHole_3.2mm_M3":
         ("M3 mounting hole, non-plated", "", "", ""),
 }

@@ -28,7 +28,7 @@ instruments.
 | **A** | 25 × MCX (straight, vertical SMT) |
 | **B** | 25 × SMA |
 | **C** | 25 × U.FL |
-| **D** | 25 × SMP (male, vertical SMT) |
+| **D** | 25 × SMP (vertical SMT, SMP-MSLD-PCS-20) |
 
 One board services one QSE-040 (25 ch). The full 96-channel system uses **4 boards**;
 all four connectors share the identical J5 pinout, so a single layout works in every
@@ -68,9 +68,9 @@ kicad-cli pcb export gerbers|drill|pos ... ; tools/make_bom.py <pcb> <csv>      
 
 Routing = escape past the QSE pads → one straight diagonal to the jack → straight into
 the signal pad between grounds (monotonic fan ⇒ planar). The 12/12 split is computed from
-pad geometry to minimise crossings (4, on the bottom layer). The **SMP** jack is the
-exception: its center signal pad is enclosed by the ground frame, so the channel runs on
-B.Cu under the frame and enters through a center via-in-pad.
+pad geometry to minimise crossings (4, on the bottom layer). Vertical SMD jacks (U.FL,
+straight MCX, SMP) are auto-rotated so their signal pad faces the QSE, where the trace
+approaches.
 
 ## Status
 
@@ -82,7 +82,7 @@ width on PCBWay's default 4-layer 1.6 mm stackup.
 | A | MCX straight (MCX-J-P-X-ST-SM1) | 76 × 139 mm | `boards/board-A-mcx/board-A-mcx-fab.zip` |
 | B | SMA (901-143-6RFX) | 75 × 149 mm | `boards/board-B-sma/board-B-sma-fab.zip` |
 | C | U.FL (U.FL-R-SMT-1) | 70 × 99 mm | `boards/board-C-ufl/board-C-ufl-fab.zip` |
-| D | SMP male (SMP-MSSB-PCS) | 74 × 112 mm | `boards/board-D-smp/board-D-smp-fab.zip` |
+| D | SMP (SMP-MSLD-PCS-20) | 75 × 120 mm | `boards/board-D-smp/board-D-smp-fab.zip` |
 
 Each fab zip = gerbers (4 copper + mask/silk/edge) + Excellon drill + position CSV + BOM CSV.
 
@@ -95,8 +95,9 @@ fine-tunes the width to their exact measured stackup.
 **Footprints — all datasheet-verified:** MCX `Samtec_MCX-J-P-X-ST-SM1` (straight, vertical
 SMT jack) matches the Samtec drawing rev C (`docs/datasheets/`): center signal Ø1.65 + 4×
 square ground 2.10 mm on a 6.54 mm square. SMA and U.FL from the KiCad library; QSE-040
-from the ETS repo; MCX + SMP `SMP_Amphenol_SMP-MSSB-PCS_Vertical` (male, vertical SMT, per
-Amphenol customer outline rev D) carried over from the sibling SMP-feedthrough project.
+from the ETS repo; MCX carried over from the sibling SMP-feedthrough project; SMP
+`SMP_Amphenol_SMP-MSLD-PCS-20` (Amphenol RF, vertical SMT) is the SnapMagic land pattern
+(pad `G` renamed to `2`), signal on an external tab.
 
 **3D models:** QSE-040, MCX, and SMP have local STEP models in [`models/`](models/); U.FL
 uses KiCad's bundled model. SMA has no 3D model (skipped). Models are visual only — fab is
@@ -105,6 +106,3 @@ unaffected.
 **Before committing to fab:**
 - No schematic/netlist (boards are built directly from `pinout.py`).
 - Confirm the straight-MCX orderable MPN (`MCX-J-P-H-ST-SM1` is inferred from the family).
-- **SMP (Board D)** enters its enclosed signal pad through a center via-in-pad — order
-  with plugged/capped (filled) vias, or hand-solder, so the SMT joint doesn't wick into
-  the via.
