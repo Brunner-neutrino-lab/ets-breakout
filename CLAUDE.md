@@ -95,9 +95,12 @@ reference/                     read-only upstream snapshot (de-gitted) + UPSTREA
   **order as controlled impedance** so the fab tunes to their exact stackup.
 - **U.FL is low-voltage** (~60 V) vs bias up to ~70 V — use U.FL only on un-biased / low-V channels.
 - Open (housekeeping, non-blocking): no schematic/netlist (boards built directly
-  from `pinout.py`); impedance is nominal until confirmed against the fab stackup;
-  straight-MCX MPN (`MCX-J-P-H-ST-SM1`) is inferred from the family — confirm the exact
-  orderable jack PN.
+  from `pinout.py`); impedance is nominal until confirmed against the fab stackup.
+- **MCX MPN confirmed + purchase-ready (2026-07-11):** `MCX-J-P-H-ST-SM1` verified orderable
+  (DigiKey SAM10608-ND; SM1 rev C drawing in `docs/datasheets/`); QSE socket = SAM8124-ND
+  (plain suffix — never sub `-RT1`, it needs retention holes the board lacks). Board A is the
+  chosen final variant; full purchase order (parts + PCB fab) in
+  [`docs/BOM.md`](docs/BOM.md) §Purchase order.
 - CAD assets (datasheet/footprint/symbol/3D) are collected per part — see
   [`docs/BOM.md`](docs/BOM.md). 3D STEP models for QSE-040, MCX, U.FL, SMP are local in
   `models/`; **SMA 3D is the only gap** (vendor-gated). Symbols are reference-only.

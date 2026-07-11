@@ -161,3 +161,17 @@ If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 > geometry (U.FL -X edge, SMP-MSLD +Y tab, MCX centred), replacing the hard-coded U.FL
 > rotation; `finalize_board.py` dropped the SMP centre-via branch. Board D is 75 x 120 mm,
 > **DRC 0/0**, all 25 tabs verified facing inward; all four boards re-checked 0/0.
+
+> **Update 2026-07-11 — Board A finalized for purchase (MCX MPN confirmed, full order BOM).**
+> The one open sourcing item is closed: **`MCX-J-P-H-ST-SM1` is the exact orderable straight-SMT
+> MCX** (verified against the Samtec SM1 rev C drawing — now in `docs/datasheets/` as
+> `Samtec_MCX-J-P-X-ST-SM1.pdf`; the previously-bundled `…ST-MT1.pdf` is the through-hole
+> variant — and the live DigiKey listing **SAM10608-ND**, 4,577 in stock, $3.99 @ 100).
+> QSE-040 socket confirmed as DigiKey **SAM8124-ND** ($7.27, 2,021 stk; plain suffix only —
+> `-RT1` needs retention holes the board lacks). `make_bom.py` PARTS now carries both DK PNs;
+> all four board BOM CSVs + fab zips regenerated. Board A re-verified: **0 DRC errors /
+> 0 unconnected** (25 warning-level 0.7 mm silk text-height notes only, cosmetic).
+> Controlled-impedance fab quotes pulled live: JLCPCB ~$65 HASL / ~$83 ENIG qty 5
+> (JLC04161H-7628 stackup, ±5 Ω at 50 Ω, their 50 Ω width ≈0.35 mm vs our 0.34 mm nominal);
+> PCBWay ~$122/$148. Full order table + DigiKey quick-add in `docs/BOM.md` §Purchase order.
+> **System order ≈ $560–590** (110× MCX + 5× QSE + 5 PCBs, ENIG).
