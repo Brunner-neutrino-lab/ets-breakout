@@ -165,7 +165,7 @@ If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 > **Update 2026-07-11 — Board A finalized for purchase (MCX MPN confirmed, full order BOM).**
 > The one open sourcing item is closed: **`MCX-J-P-H-ST-SM1` is the exact orderable straight-SMT
 > MCX** (verified against the Samtec SM1 rev C drawing — now in `docs/datasheets/` as
-> `Samtec_MCX-J-P-X-ST-SM1.pdf`; the previously-bundled `…ST-MT1.pdf` is the through-hole
+> `Samtec_MCX-J-P-X-ST-SM1.pdf`; the previously-bundled `…ST-MT1.pdf` was the through-hole
 > variant — and the live DigiKey listing **SAM10608-ND**, 4,577 in stock, $3.99 @ 100).
 > QSE-040 socket confirmed as DigiKey **SAM8124-ND** ($7.27, 2,021 stk; plain suffix only —
 > `-RT1` needs retention holes the board lacks). `make_bom.py` PARTS now carries both DK PNs;
@@ -175,3 +175,16 @@ If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 > (JLC04161H-7628 stackup, ±5 Ω at 50 Ω, their 50 Ω width ≈0.35 mm vs our 0.34 mm nominal);
 > PCBWay ~$122/$148. Full order table + DigiKey quick-add in `docs/BOM.md` §Purchase order.
 > **System order ≈ $560–590** (110× MCX + 5× QSE + 5 PCBs, ENIG).
+
+> **Update 2026-07-11 — MCX datasheet cleanup (MT1 drawing removed).** Re-verified
+> `docs/datasheets/Samtec_MCX-J-P-X-ST-SM1.pdf` byte-identical (SHA-256) to the live
+> Samtec print (`suddendocs.samtec.com/prints/mcx-j-p-x-st-sm1-mkt.pdf`); its text confirms
+> *MCX STRAIGHT, SMT JACK – 50 OHM*, revision **C**, `-H` = heavy gold, tray packaging.
+> Removed `Samtec_MCX-J-P-X-ST-MT1.pdf` (rev B, the mixed-technology/through-hole-leg MCX
+> family — a different part not used on any board; keeping it invited exactly the
+> SM1-vs-MT1 confusion it caused). The reference-only schematic symbol carried over from
+> the SnapMagic MT1 import was renamed `MCX-J-P-X-ST-MT1` → `MCX-J-P-X-ST-SM1` (its
+> Footprint field already pointed at the SM1 footprint), its Datasheet field repointed to
+> the SM1 PDF, PARTREV B → C, and description filled in; `docs/BOM.csv` symbol column
+> updated to match. `docs/datasheets/` is back to exactly the 5 per-part drawings
+> CLAUDE.md advertises.

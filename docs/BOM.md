@@ -68,7 +68,7 @@ models in [`../models/`](../models/).
 | Part | Datasheet | Footprint | Symbol | 3D CAD |
 |------|:---------:|:---------:|:------:|:------:|
 | QSE-040-01-L-D-A | ✅ `Samtec_QSE.pdf` | ✅ | ✅ | ✅ `QSE-040-01-L-D-A.stp` |
-| MCX-J-P-X-ST-SM1 | ✅ `Samtec_MCX-J-P-X-ST-SM1.pdf` (SM1 rev C; the older `…ST-MT1.pdf` is the through-hole variant, kept for reference) | ✅ | ✅ | ✅ `MCX-J-P-X-ST-SM1.step` |
+| MCX-J-P-X-ST-SM1 | ✅ `Samtec_MCX-J-P-X-ST-SM1.pdf` (SM1 rev C) | ✅ | ✅ | ✅ `MCX-J-P-X-ST-SM1.step` |
 | 901-143-6RFX (SMA) | ✅ `Amphenol_901-143-6RFX.pdf` | ✅ | ✅ | ⛔ vendor-gated (Amphenol/SnapMagic login) |
 | U.FL-R-SMT-1(10) | ✅ `Hirose_U.FL-R-SMT-1.pdf` | ✅ | ✅ | ✅ `U.FL_Hirose_U.FL-R-SMT-1_Vertical.step` |
 | SMP-MSLD-PCS-20 | ✅ `Amphenol_SMP-MSLD-PCS.pdf` | ✅ | ✅ | ✅ `SMP-MSLD-PCS-20.stp` |
@@ -91,4 +91,6 @@ login (Amphenol RF / SnapMagic / Ultra Librarian), so it isn't bundled. Everythi
 - Datasheets were collected from manufacturer/CDN sources; the SMA and SMP drawings come
   from Amphenol's public CDN, U.FL from a Hirose drawing, QSE from the Samtec QSE-series
   catalog, MCX from the Samtec **SM1 rev C** drawing (`Samtec_MCX-J-P-X-ST-SM1.pdf`, added
-  2026-07-11; the older `…ST-MT1.pdf` through-hole drawing is kept for reference).
+  2026-07-11, byte-identical to the live Samtec print). The old `…ST-MT1.pdf` (rev B,
+  mixed-technology/through-hole family — a different part, not used on any board) was
+  removed 2026-07-11.
