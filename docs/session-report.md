@@ -188,3 +188,14 @@ If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 > the SM1 PDF, PARTREV B → C, and description filled in; `docs/BOM.csv` symbol column
 > updated to match. `docs/datasheets/` is back to exactly the 5 per-part drawings
 > CLAUDE.md advertises.
+
+> **Update 2026-07-11 (later) — reference schematic for human review.** Added
+> `tools/gen_schematic.py` → `docs/schematic/ets-breakout.kicad_sch` + `.pdf`: single A3
+> sheet, J5 drawn as an 88-pin symbol whose **pin names are the nets themselves**, 25 jack
+> symbols with the board's own refs (K0–K23, IV), all connectivity by net labels, THERM4/5
+> no-connected. Generated from the same `pinout.py` the boards build from, so it cannot
+> drift. Gates: **ERC 0 errors** (26 warning-level "lib nickname 'ets' not configured"
+> notices are inherent to a standalone sheet with embedded symbols) and the sheet's exported
+> netlist **machine-verified identical** to `pinout.py` (25 signal nets incl. IV on J5
+> pins 40+42, GNDA 85/85 members, THERM4/5 unconnected). This is a review artifact only —
+> the board pipeline is unchanged (still generated straight from `pinout.py`).

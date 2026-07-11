@@ -104,5 +104,9 @@ uses KiCad's bundled model. SMA has no 3D model (skipped). Models are visual onl
 unaffected.
 
 **Before committing to fab:**
-- No schematic/netlist (boards are built directly from `pinout.py`).
-- Confirm the straight-MCX orderable MPN (`MCX-J-P-H-ST-SM1` is inferred from the family).
+- Boards are built directly from `pinout.py` (no netlist-driven flow). A **reference
+  schematic for human review** is in [`docs/schematic/`](docs/schematic/) (PDF + `.kicad_sch`),
+  generated from the same `pinout.py` by `tools/gen_schematic.py` — its exported netlist is
+  verified identical to the pin map.
+- ~~Confirm the straight-MCX orderable MPN~~ **Confirmed 2026-07-11:** `MCX-J-P-H-ST-SM1`
+  (DigiKey SAM10608-ND). Purchase package in [`order/`](order/).
