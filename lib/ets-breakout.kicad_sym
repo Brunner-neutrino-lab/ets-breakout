@@ -2,7 +2,7 @@
 	(version 20251024)
 	(generator "kicad_symbol_editor")
 	(generator_version "10.0")
-	(symbol "MCX-J-P-X-ST-MT1"
+	(symbol "MCX-J-P-X-ST-SM1"
 		(pin_names
 			(offset 1.016)
 		)
@@ -22,7 +22,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Value" "MCX-J-P-X-ST-MT1"
+		(property "Value" "MCX-J-P-X-ST-SM1"
 			(at -4.064 -4.318 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -45,7 +45,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Datasheet" "Samtec_MCX-J-P-X-ST-MT1.pdf"
+		(property "Datasheet" "Samtec_MCX-J-P-X-ST-SM1.pdf"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -56,7 +56,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "MCX straight SMT jack, 50 ohm"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -67,7 +67,7 @@
 				)
 			)
 		)
-		(property "PARTREV" "B"
+		(property "PARTREV" "C"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -115,7 +115,7 @@
 				(justify bottom)
 			)
 		)
-		(symbol "MCX-J-P-X-ST-MT1_0_0"
+		(symbol "MCX-J-P-X-ST-SM1_0_0"
 			(polyline
 				(pts
 					(xy -3.302 3.302) (xy -2.54 2.54)
