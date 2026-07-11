@@ -4,8 +4,9 @@ Everything needed to place the two orders is in this folder. No project context 
 Part numbers, stock and prices were verified live **2026-07-11** (design state: git `e042717`,
 board DRC-clean). Questions → see [`../docs/BOM.md`](../docs/BOM.md) §Purchase order.
 
-**What this buys:** 5 PCBs (4 needed + 1 spare) and connectors for 4 boards + 20 % spares.
-**Expected total ≈ $625** ($515 DigiKey + ~$83 PCB + ~$28 shipping).
+**What this buys:** 5 PCBs (4 needed + 1 spare), connectors for 4 boards + 20 % spares, and
+4× SMA-to-TRB triax adapters for the IV outputs.
+**Expected total ≈ $915** ($805 DigiKey + ~$83 PCB + ~$28 shipping).
 
 | File | Use |
 |------|-----|
@@ -44,7 +45,7 @@ Reference quote pulled 2026-07-11: **$83.08 ENIG qty 5** ($25 engineering + $6.5
 $32.84 impedance + $1.04 file confirm + $17.70 ENIG), 3–4 day build, DHL ~$28.
 HASL variant was $65.38 if cost matters more than pad flatness.
 
-## Order 2 — Connectors at DigiKey ($515.15)
+## Order 2 — Connectors at DigiKey ($804.79)
 
 Upload `digikey-bom-connectors.csv` at DigiKey → **myLists → Upload a File**, review, add to
 cart. Or paste into Quick Add (`PN, qty`):
@@ -52,12 +53,14 @@ cart. Or paste into Quick Add (`PN, qty`):
 ```
 SAM10608-ND, 120
 SAM8124-ND, 5
+1097-1372-ND, 4
 ```
 
 | PN | Part | Qty | Unit | Ext | Stock 2026-07-11 |
 |----|------|----:|-----:|----:|------|
 | SAM10608-ND | Samtec MCX-J-P-H-ST-SM1 — MCX jack, straight SMT, 50 Ω | 120 | $3.99 (@100 break) | $478.80 | 4,577 |
 | SAM8124-ND | Samtec QSE-040-01-L-D-A — detector-side socket | 5 | $7.27 | $36.35 | 2,021 |
+| 1097-1372-ND | Cinch 3-0347-9 — coax adapter, SMA to TRB (triax) — **for IV out**, 1 per board | 4 | $72.41 | $289.64 | 147 |
 
 **Substitution rules (important):**
 

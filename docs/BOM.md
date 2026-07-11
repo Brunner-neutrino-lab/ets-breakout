@@ -34,9 +34,10 @@ CSV + wizard walkthrough) is in [`../order/`](../order/README.md).
 | 1 | MCX jack `MCX-J-P-H-ST-SM1` | **SAM10608-ND** | DigiKey | 120 | $3.99 (@100) | $478.80 | 4,577 (breaks: 1/$5.83 · 50/$4.91 · 100/$3.99) |
 | 2 | QSE socket `QSE-040-01-L-D-A` | **SAM8124-ND** | DigiKey | 5 | $7.27 | $36.35 | 2,021 (Mouser `200-QSE04001LDA` cheaper at $5.59 → $27.95, 2,589 stk — aggregator-sourced, reconfirm in cart) |
 | 3 | PCB `board-A-mcx-fab.zip` (76.42 × 138.69 mm, 4-layer, controlled impedance) | — | JLCPCB (or PCBWay) | 5 | — | ~$65 HASL / ~$83 ENIG | JLCPCB 3–4 day build, +~$28 DHL |
-| 4 | M3 screws/standoffs (mounting) | — | generic | 16+ | — | — | lab stock |
+| 4 | SMA-to-TRB (triax) coax adapter, Cinch `3-0347-9` — **for IV out**, 1 per board | **1097-1372-ND** | DigiKey | 4 | $72.41 | $289.64 | 147 |
+| 5 | M3 screws/standoffs (mounting) | — | generic | 16+ | — | — | lab stock |
 
-**Total ≈ $625** (DigiKey $515.15 + JLCPCB ENIG ~$83 + ~$28 shipping). PCBWay quoted ~$122
+**Total ≈ $915** (DigiKey $804.79 + JLCPCB ENIG ~$83 + ~$28 shipping). PCBWay quoted ~$122
 HASL / ~$148 ENIG (+$48 impedance fee) as the alternative.
 
 DigiKey Quick-Add (`PN, qty`):
@@ -44,6 +45,7 @@ DigiKey Quick-Add (`PN, qty`):
 ```
 SAM10608-ND, 120
 SAM8124-ND, 5
+1097-1372-ND, 4
 ```
 
 **PCB ordering notes (both fabs confirmed they tune width at file review):**
