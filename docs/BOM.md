@@ -25,23 +25,24 @@ chosen jack** per system.
 ## Purchase order — final build (Board A / MCX, full 96-channel system)
 
 **Board A is the chosen final variant.** Quantities below build 4 boards + 1 spare PCB, with
-10 spare jacks and 1 spare socket. All part numbers, stock and prices verified live
-**2026-07-11**.
+**20 % connector spares** (120 jacks, 5 sockets). All part numbers, stock and prices verified
+live **2026-07-11**. The ready-to-send handover package (JLCPCB upload zip + DigiKey upload
+CSV + wizard walkthrough) is in [`../order/`](../order/README.md).
 
 | # | Item | Order PN | Source | Qty | Unit | Ext | Stock (2026-07-11) |
 |---|------|----------|--------|----:|-----:|----:|-------|
-| 1 | MCX jack `MCX-J-P-H-ST-SM1` | **SAM10608-ND** | DigiKey | 110 | $3.99 (@100) | $438.90 | 4,577 (breaks: 1/$5.83 · 50/$4.91 · 100/$3.99) |
+| 1 | MCX jack `MCX-J-P-H-ST-SM1` | **SAM10608-ND** | DigiKey | 120 | $3.99 (@100) | $478.80 | 4,577 (breaks: 1/$5.83 · 50/$4.91 · 100/$3.99) |
 | 2 | QSE socket `QSE-040-01-L-D-A` | **SAM8124-ND** | DigiKey | 5 | $7.27 | $36.35 | 2,021 (Mouser `200-QSE04001LDA` cheaper at $5.59 → $27.95, 2,589 stk — aggregator-sourced, reconfirm in cart) |
 | 3 | PCB `board-A-mcx-fab.zip` (76.42 × 138.69 mm, 4-layer, controlled impedance) | — | JLCPCB (or PCBWay) | 5 | — | ~$65 HASL / ~$83 ENIG | JLCPCB 3–4 day build, +~$28 DHL |
 | 4 | M3 screws/standoffs (mounting) | — | generic | 16+ | — | — | lab stock |
 
-**Total ≈ $560–590** (DigiKey ~$475 + JLCPCB ENIG ~$83 + shipping). PCBWay quoted ~$122
+**Total ≈ $625** (DigiKey $515.15 + JLCPCB ENIG ~$83 + ~$28 shipping). PCBWay quoted ~$122
 HASL / ~$148 ENIG (+$48 impedance fee) as the alternative.
 
 DigiKey Quick-Add (`PN, qty`):
 
 ```
-SAM10608-ND, 110
+SAM10608-ND, 120
 SAM8124-ND, 5
 ```
 

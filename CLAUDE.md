@@ -84,6 +84,7 @@ docs/datasheets/               5 part datasheets (Samtec QSE + MCX, Amphenol SMA
 docs/BOM.md  docs/BOM.csv       consolidated master BOM + CAD-asset matrix (per-board BOMs in boards/*/fab/)
 docs/session-report.md         development history / decisions / rationale
 boards/board-{A-mcx,B-sma,C-ufl,D-smp}/   .kicad_pcb/.kicad_pro + routed-top.pdf + fab/ + *-fab.zip
+order/                         purchase handover package: JLCPCB upload zip + DigiKey BOM CSV + wizard walkthrough
 reference/                     read-only upstream snapshot (de-gitted) + UPSTREAM.md
 ```
 
