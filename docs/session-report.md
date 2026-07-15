@@ -199,3 +199,44 @@ If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 > netlist **machine-verified identical** to `pinout.py` (25 signal nets incl. IV on J5
 > pins 40+42, GNDA 85/85 members, THERM4/5 unconnected). This is a review artifact only —
 > the board pipeline is unchanged (still generated straight from `pinout.py`).
+
+> **Update 2026-07-15 — Board A re-laid-out: through-hole MCX, 8/16 planar, FreeRouting autoroute, JLC stackup.**
+> Board A was redone to eliminate the four connector-crossing traces the engineer flagged, and to
+> retarget the design at JLCPCB. **Why the old tracks crossed:** the earlier layout forced a
+> *balanced* **12/12** jacks-per-edge split (equal flange bundles), but the QSE-040's two pin rows
+> are asymmetric (16 channels one row, 8 the other), so 12/12 has a hard floor of **4 nets crossing**
+> the connector — routed on the other signal layer via 4 layer-hops. **The fix:** split the 24
+> channels the way the connector already splits them — **8** on the west edge (K8–K15, the odd-pin
+> row) and **16** on the east edge (K0–K7, K16–K23) **+ IV**, each jack placed on the edge matching
+> its own QSE pin column. That gives a **monotonic single-layer fan on B.Cu with zero connector
+> crossings**. (The old even split is retained only as a documented `SPLIT="balanced"` flag in
+> `gen_board.py`.)
+>
+> **Jack changed SMD → through-hole:** Board A now uses **Samtec `MCX-J-P-H-ST-TH1`** (straight/
+> vertical, through-hole, 50 Ω, 6 GHz female jack; DigiKey **SAM8944-ND**, $4.21 @ 100, ~11.6 k in
+> stock; footprint `Samtec_MCX-J-P-H-ST-TH1`, pad 1 signal drill 1.10 mm centred, 4× ground drill
+> 1.40 mm on a 5.08 mm square). A plated through-hole signal pin is copper on *all* layers, so the
+> QSE's B.Cu channel escape lands directly on it with **no face-change via** — the whole board now
+> has **zero signal vias** (only GND stitching + island-tie vias). This **reverses** the prior
+> "confirmed MPN is the straight-SMD `MCX-J-P-H-ST-SM1` / SAM10608-ND" conclusion; that SMD part and
+> its SM1 rev C drawing are no longer Board A's part. Right-angle THT `MCX-J-P-H-RA-TH1`
+> (SAM10607-ND) is a valid mechanical alternative (side cable exit, needs a re-layout); do **not**
+> cross to the 75 Ω `MCX7-J-P-H-ST-TH1` (SAM8945-ND) or the smaller `MMCX-J-P-H-ST-TH1`
+> (SAM10617-ND). Assembly is now **mixed**: THT jacks are hand/selective-soldered, the QSE-040 stays SMD.
+>
+> **Impedance / fab:** trace width **0.325 mm** = 50 Ω single-ended microstrip on the **JLCPCB
+> `JLC04161H-7628`** 4-layer 1.6 mm stack (0.2104 mm 7628 prepreg to the adjacent inner GND plane,
+> Dk 4.4), GND-pour clearance 0.30 mm. Fab is **JLCPCB only** now (all PCBWay quotes/comparisons
+> dropped); order as controlled impedance so JLC re-tunes the etched width. Board grew to
+> **75.0 × 157.2 mm** (was 76 × 139; the east edge carries 17 jacks) — still 118 cm², under JLC's
+> 650 cm² large-board surcharge. **DRC 0 violations / 0 unconnected**, all 25 nets on B.Cu.
+>
+> **Router + pipeline:** Board A now autoroutes with **FreeRouting** (KiCad → Specctra `.dsn` →
+> FreeRouting v2.2.4 → `.ses` → KiCad), replacing the bespoke deterministic diagonal router (B/C/D
+> still use the deterministic router). New Board A pipeline:
+> `gen_board.py mcx` → `finalize_board.py <pcb> setup` → `export_dsn.py <pcb> B.Cu` → FreeRouting →
+> `import_ses.py <pcb>` → `finalize_board.py <pcb> stitch` → `fill_zones.py <pcb>` →
+> `tie_islands.py <pcb>` → `kicad-cli pcb drc`. New tool scripts: `tools/export_dsn.py`,
+> `tools/import_ses.py`, `tools/tie_islands.py`; `finalize_board.py` gained `setup`/`stitch` modes.
+> Unchanged: QSE socket `QSE-040-01-L-D-A` (SAM8124-ND), IV-out Cinch 3-0347-9 (1097-1372-ND), and
+> `pinout.py` as the single source of truth.

@@ -558,9 +558,9 @@
 		(pin_names (offset 1.016) (hide yes))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "K" (at 0 6.35 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 0 -6.35 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Samtec_MCX-J-P-X-ST-SM1" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Datasheet" "Samtec_MCX-J-P-X-ST-SM1.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 0 -6.35 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Samtec_MCX-J-P-H-ST-TH1" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Datasheet" "mcx-j-p-x-st-th1-mkt.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(symbol "COAX_JACK_0_1"
 			(circle (center 0 1.27) (radius 2.2) (stroke (width 0.254) (type default)) (fill (type none)))
 			(circle (center 0 1.27) (radius 0.4) (stroke (width 0.254) (type default)) (fill (type outline)))
@@ -1483,7 +1483,7 @@
 		(dnp no)
 		(uuid "c0b0268d-7f44-5876-945d-d2e32d4ea999")
 		(property "Reference" "K0" (at 190.5 44.449999999999996 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 190.5 57.15 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 190.5 57.15 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K0") (unit 1))
@@ -1522,7 +1522,7 @@
 		(dnp no)
 		(uuid "026a93e4-bd85-5e36-9913-63b623a4ec74")
 		(property "Reference" "K1" (at 236.22 44.449999999999996 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 236.22 57.15 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 236.22 57.15 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K1") (unit 1))
@@ -1561,7 +1561,7 @@
 		(dnp no)
 		(uuid "04a81ecc-c37f-5209-95f8-29a3dcea0473")
 		(property "Reference" "K2" (at 281.94 44.449999999999996 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 281.94 57.15 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 281.94 57.15 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K2") (unit 1))
@@ -1600,7 +1600,7 @@
 		(dnp no)
 		(uuid "62ccc4f7-4bdf-512c-9e74-9d608343e397")
 		(property "Reference" "K3" (at 327.66 44.449999999999996 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 327.66 57.15 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 327.66 57.15 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K3") (unit 1))
@@ -1639,7 +1639,7 @@
 		(dnp no)
 		(uuid "86a1d7f0-9611-5d90-885c-593985fe70f0")
 		(property "Reference" "K4" (at 373.38 44.449999999999996 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 373.38 57.15 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 373.38 57.15 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K4") (unit 1))
@@ -1678,7 +1678,7 @@
 		(dnp no)
 		(uuid "9106a573-262e-5116-9af2-7af1e195b584")
 		(property "Reference" "K5" (at 190.5 90.17 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 190.5 102.86999999999999 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 190.5 102.86999999999999 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K5") (unit 1))
@@ -1717,7 +1717,7 @@
 		(dnp no)
 		(uuid "af472dc0-e814-5a32-afb0-9a2c090fefd1")
 		(property "Reference" "K6" (at 236.22 90.17 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 236.22 102.86999999999999 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 236.22 102.86999999999999 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K6") (unit 1))
@@ -1756,7 +1756,7 @@
 		(dnp no)
 		(uuid "c9f14fd1-4e1f-5754-9c42-cb2d01a7df38")
 		(property "Reference" "K7" (at 281.94 90.17 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 281.94 102.86999999999999 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 281.94 102.86999999999999 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K7") (unit 1))
@@ -1795,7 +1795,7 @@
 		(dnp no)
 		(uuid "a5e33789-ba53-5c82-a235-63c6b8c34994")
 		(property "Reference" "K8" (at 327.66 90.17 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 327.66 102.86999999999999 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 327.66 102.86999999999999 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K8") (unit 1))
@@ -1834,7 +1834,7 @@
 		(dnp no)
 		(uuid "a22af1ba-1c6d-5b5c-82d1-454e18a116c2")
 		(property "Reference" "K9" (at 373.38 90.17 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 373.38 102.86999999999999 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 373.38 102.86999999999999 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K9") (unit 1))
@@ -1873,7 +1873,7 @@
 		(dnp no)
 		(uuid "beb1e3e8-c871-527f-8c87-e4bac2b1fdcf")
 		(property "Reference" "K10" (at 190.5 135.89000000000001 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 190.5 148.59 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 190.5 148.59 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K10") (unit 1))
@@ -1912,7 +1912,7 @@
 		(dnp no)
 		(uuid "ead29128-f12f-5f19-8fd6-7fb14388facf")
 		(property "Reference" "K11" (at 236.22 135.89000000000001 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 236.22 148.59 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 236.22 148.59 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K11") (unit 1))
@@ -1951,7 +1951,7 @@
 		(dnp no)
 		(uuid "e1fefaff-ab6c-5f11-b0a9-68189b814d51")
 		(property "Reference" "K12" (at 281.94 135.89000000000001 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 281.94 148.59 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 281.94 148.59 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K12") (unit 1))
@@ -1990,7 +1990,7 @@
 		(dnp no)
 		(uuid "584ae3e9-0320-55b2-97d3-d7f1e0729310")
 		(property "Reference" "K13" (at 327.66 135.89000000000001 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 327.66 148.59 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 327.66 148.59 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K13") (unit 1))
@@ -2029,7 +2029,7 @@
 		(dnp no)
 		(uuid "ef7caa60-dd92-5839-abbb-8f383ff98481")
 		(property "Reference" "K14" (at 373.38 135.89000000000001 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 373.38 148.59 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 373.38 148.59 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K14") (unit 1))
@@ -2068,7 +2068,7 @@
 		(dnp no)
 		(uuid "88f84f5a-b101-5aad-9071-d0a7438c3208")
 		(property "Reference" "K15" (at 190.5 181.61 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 190.5 194.31 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 190.5 194.31 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K15") (unit 1))
@@ -2107,7 +2107,7 @@
 		(dnp no)
 		(uuid "40eae1e0-5247-54cb-a190-42335aaca604")
 		(property "Reference" "K16" (at 236.22 181.61 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 236.22 194.31 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 236.22 194.31 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K16") (unit 1))
@@ -2146,7 +2146,7 @@
 		(dnp no)
 		(uuid "bd62b433-192d-57c7-a2ec-d62035d6acc8")
 		(property "Reference" "K17" (at 281.94 181.61 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 281.94 194.31 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 281.94 194.31 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K17") (unit 1))
@@ -2185,7 +2185,7 @@
 		(dnp no)
 		(uuid "d4b572d9-1a88-50cf-baa5-a74ba1c9e953")
 		(property "Reference" "K18" (at 327.66 181.61 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 327.66 194.31 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 327.66 194.31 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K18") (unit 1))
@@ -2224,7 +2224,7 @@
 		(dnp no)
 		(uuid "2b591b00-3e77-5471-9ce8-952692a545c6")
 		(property "Reference" "K19" (at 373.38 181.61 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 373.38 194.31 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 373.38 194.31 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K19") (unit 1))
@@ -2263,7 +2263,7 @@
 		(dnp no)
 		(uuid "7f5c8970-c89b-54df-b34e-c718e6db0598")
 		(property "Reference" "K20" (at 190.5 227.33 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 190.5 240.03 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 190.5 240.03 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K20") (unit 1))
@@ -2302,7 +2302,7 @@
 		(dnp no)
 		(uuid "bb7dac09-59cc-5a26-b01e-f734d2c540ac")
 		(property "Reference" "K21" (at 236.22 227.33 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 236.22 240.03 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 236.22 240.03 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K21") (unit 1))
@@ -2341,7 +2341,7 @@
 		(dnp no)
 		(uuid "77043450-52dc-5204-bf9e-4fe04b83d0a1")
 		(property "Reference" "K22" (at 281.94 227.33 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 281.94 240.03 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 281.94 240.03 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K22") (unit 1))
@@ -2380,7 +2380,7 @@
 		(dnp no)
 		(uuid "f2349de9-2844-51e4-af49-f1671535cfeb")
 		(property "Reference" "K23" (at 327.66 227.33 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 327.66 240.03 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 327.66 240.03 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "K23") (unit 1))
@@ -2419,7 +2419,7 @@
 		(dnp no)
 		(uuid "9c93eead-0671-5d71-a292-c642bed3cee4")
 		(property "Reference" "IV" (at 373.38 227.33 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "MCX-J-P-H-ST-SM1" (at 373.38 240.03 0) (effects (font (size 1.0 1.0))))
+		(property "Value" "MCX-J-P-H-ST-TH1" (at 373.38 240.03 0) (effects (font (size 1.0 1.0))))
 		(instances
 			(project "ets-breakout"
 				(path "/87a67cfb-0e88-54f9-9702-97d28b5ded27" (reference "IV") (unit 1))
@@ -2464,11 +2464,11 @@
 		(effects (font (size 2.0 2.0)) (justify left bottom))
 		(uuid "f534c69e-0f52-5736-9d8a-9b53923294e2")
 	)
-	(text "Jack part per variant: A=MCX-J-P-H-ST-SM1  B=901-143-6RFX  C=U.FL-R-SMT-1(10)  D=SMP-MSLD-PCS-20"
+	(text "Jack part per variant: A=MCX-J-P-H-ST-TH1  B=901-143-6RFX  C=U.FL-R-SMT-1(10)  D=SMP-MSLD-PCS-20"
 		(exclude_from_sim no)
 		(at 190.5 287.02 0)
 		(effects (font (size 2.0 2.0)) (justify left bottom))
-		(uuid "bd3e8966-684f-5a27-b1da-b7ff0c32ff66")
+		(uuid "cbbab1c6-eccd-5c4a-9313-cc54ab08fde5")
 	)
 	(sheet_instances
 		(path "/" (page "1"))

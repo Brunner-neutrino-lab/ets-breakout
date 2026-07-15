@@ -25,7 +25,7 @@ instruments.
 ### Variants
 | Board | Jacks |
 |-------|-------|
-| **A** | 25 × MCX (straight, vertical SMT) |
+| **A** | 25 × MCX (straight, vertical through-hole) |
 | **B** | 25 × SMA |
 | **C** | 25 × U.FL |
 | **D** | 25 × SMP (vertical SMT, SMP-MSLD-PCS-20) |
@@ -58,55 +58,76 @@ python tests/test_pinout.py  # sanity + self-consistency checks
 
 ## Build pipeline
 
+All `tools/*.py` run under KiCad's bundled interpreter
+(`"C:/Program Files/KiCad/10.0/bin/python.exe"`).
+
 ```
-"C:/Program Files/KiCad/10.0/bin/python.exe" tools/gen_board.py   [mcx|sma|ufl|smp]  # placement + nets + outline + holes
-"C:/Program Files/KiCad/10.0/bin/python.exe" tools/finalize_board.py <pcb>           # stackup + 50 ohm routes + GND zones + stitching
-"C:/Program Files/KiCad/10.0/bin/python.exe" tools/fill_zones.py     <pcb>           # fill pours (separate pass)
-kicad-cli pcb drc <pcb>                                                              # verify (all four: 0 violations)
-kicad-cli pcb export gerbers|drill|pos ... ; tools/make_bom.py <pcb> <csv>           # fab outputs
+# Board A (MCX, through-hole) — FreeRouting autoroute, ZERO signal vias:
+tools/gen_board.py mcx                 # placement + nets + outline + holes (8/16 planar split)
+tools/finalize_board.py <pcb> setup    # 4-layer stackup + GND zones (no routes yet)
+tools/export_dsn.py <pcb> B.Cu         # write Specctra .dsn for the router
+#   -> FreeRouting v2.2.4 (java) autoroute -> .ses
+tools/import_ses.py <pcb>              # pull the routed B.Cu tracks back in
+tools/finalize_board.py <pcb> stitch   # GND stitching vias
+tools/fill_zones.py <pcb>              # fill GND pours (separate pass)
+tools/tie_islands.py <pcb>             # island-tie vias
+kicad-cli pcb drc <pcb>                # verify (0 violations, 0 unconnected)
+
+# Boards B/C/D (SMA/U.FL/SMP) — deterministic router, single finalize pass:
+tools/gen_board.py [sma|ufl|smp]
+tools/finalize_board.py <pcb>          # stackup + 50 ohm routes + GND zones + stitching (one pass)
+tools/fill_zones.py <pcb>
+kicad-cli pcb drc <pcb>
+
+kicad-cli pcb export gerbers|drill|pos ... ; tools/make_bom.py <pcb> <csv>   # fab outputs
 ```
 
-Routing = escape past the QSE pads → one straight diagonal to the jack → straight into
-the signal pad between grounds (monotonic fan ⇒ planar). The 12/12 split is computed from
-pad geometry to minimise crossings (4, on the bottom layer). Vertical SMD jacks (U.FL,
-straight MCX, SMP) are auto-rotated so their signal pad faces the QSE, where the trace
-approaches.
+**Board A** routes as an **8/16 planar fan on B.Cu**: the QSE's two pin rows split the 24
+channels 8 (west) / 16 (east) + IV, so each jack sits on the edge of its own QSE pin column
+— a monotonic single-layer fan with **zero connector crossings and zero signal vias** (the
+through-hole MCX signal pin is plated through every layer, so the B.Cu escape lands on it
+with no face-change via). FreeRouting does the autoroute; only GND stitching + island-tie
+vias remain. **Boards B/C/D** still use the deterministic router — escape past the QSE pads →
+one straight diagonal to the jack → straight into the signal pad between grounds — with a
+12/12 split (retained as the `SPLIT="balanced"` flag) that crosses 4 channels on the bottom
+layer. Vertical jacks (U.FL, MCX, SMP) are auto-rotated so their signal pad faces the QSE.
 
 ## Status
 
 **All four boards route DRC-clean (0 violations, 0 unconnected)** at the 50 Ω trace
-width on PCBWay's default 4-layer 1.6 mm stackup.
+width on the JLCPCB **JLC04161H-7628** 4-layer 1.6 mm stackup. Board A carries **0 signal
+vias** (GND stitching + island-tie vias only; all 25 nets on B.Cu).
 
 | Board | Connector | Size | Fab package |
 |-------|-----------|------|-------------|
-| A | MCX straight (MCX-J-P-X-ST-SM1) | 76 × 139 mm | `boards/board-A-mcx/board-A-mcx-fab.zip` |
+| A | MCX straight, through-hole (MCX-J-P-H-ST-TH1) | 75 × 157 mm | `boards/board-A-mcx/board-A-mcx-fab.zip` |
 | B | SMA (901-143-6RFX) | 75 × 149 mm | `boards/board-B-sma/board-B-sma-fab.zip` |
 | C | U.FL (U.FL-R-SMT-1) | 70 × 99 mm | `boards/board-C-ufl/board-C-ufl-fab.zip` |
 | D | SMP (SMP-MSLD-PCS-20) | 75 × 120 mm | `boards/board-D-smp/board-D-smp-fab.zip` |
 
 Each fab zip = gerbers (4 copper + mask/silk/edge) + Excellon drill + position CSV + BOM CSV.
 
-**Impedance:** channel traces are **0.34 mm** wide ≈ 50 Ω microstrip on the PCBWay default
-4-layer stack (~0.21 mm L1→L2 prepreg, FR4 Dk ≈ 4.3), GND pour held back 0.30 mm to limit
-coplanar coupling. `EDGE_GAP` is set so the fan diagonals stay shallow enough that the
-0.34 mm traces clear at the dense escape. **Order as controlled impedance** so PCBWay
-fine-tunes the width to their exact measured stackup.
+**Impedance:** channel traces are **0.325 mm** wide ≈ 50 Ω single-ended microstrip on the
+JLCPCB **JLC04161H-7628** 4-layer 1.6 mm stack (0.2104 mm 7628 prepreg to the adjacent inner
+GND plane, Dk ≈ 4.4), GND pour held back 0.30 mm to limit coplanar coupling. **Order as
+controlled impedance** (JLC's impedance-control option on that stackup) so JLC re-tunes the
+etched width to their exact stackup.
 
-**Footprints — all datasheet-verified:** MCX `Samtec_MCX-J-P-X-ST-SM1` (straight, vertical
-SMT jack) matches the Samtec drawing rev C (`docs/datasheets/`): center signal Ø1.65 + 4×
-square ground 2.10 mm on a 6.54 mm square. SMA and U.FL from the KiCad library; QSE-040
-from the ETS repo; MCX carried over from the sibling SMP-feedthrough project; SMP
-`SMP_Amphenol_SMP-MSLD-PCS-20` (Amphenol RF, vertical SMT) is the SnapMagic land pattern
-(pad `G` renamed to `2`), signal on an external tab.
+**Footprints — all datasheet-verified:** MCX `Samtec_MCX-J-P-H-ST-TH1` (straight, vertical
+**through-hole** jack) matches the Samtec drawing (`docs/datasheets/`, mcx-j-p-x-st-th1-mkt):
+pad 1 signal drill Ø1.10 mm centered + 4× ground drill Ø1.40 mm on a 5.08 mm square. SMA and
+U.FL from the KiCad library; QSE-040 from the ETS repo; SMP `SMP_Amphenol_SMP-MSLD-PCS-20`
+(Amphenol RF, vertical SMT) is the SnapMagic land pattern (pad `G` renamed to `2`), signal on
+an external tab.
 
-**3D models:** QSE-040, MCX, and SMP have local STEP models in [`models/`](models/); U.FL
-uses KiCad's bundled model. SMA has no 3D model (skipped). Models are visual only — fab is
-unaffected.
+**3D models:** QSE-040 and SMP have local STEP models in [`models/`](models/); U.FL uses
+KiCad's bundled model. SMA and the through-hole MCX have no 3D model yet (gap). Models are
+visual only — fab is unaffected.
 
 **Before committing to fab:**
 - Boards are built directly from `pinout.py` (no netlist-driven flow). A **reference
   schematic for human review** is in [`docs/schematic/`](docs/schematic/) (PDF + `.kicad_sch`),
   generated from the same `pinout.py` by `tools/gen_schematic.py` — its exported netlist is
   verified identical to the pin map.
-- ~~Confirm the straight-MCX orderable MPN~~ **Confirmed 2026-07-11:** `MCX-J-P-H-ST-SM1`
-  (DigiKey SAM10608-ND). Purchase package in [`order/`](order/).
+- ~~Confirm the straight-MCX orderable MPN~~ **Confirmed 2026-07-15:** Board A is now
+  **through-hole** — `MCX-J-P-H-ST-TH1` (DigiKey SAM8944-ND). Purchase package in [`order/`](order/).

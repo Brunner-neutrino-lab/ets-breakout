@@ -36,9 +36,11 @@ SIG_PAD, GND_PAD = "1", "2"
 # style "edge" = right-angle jack, cable exits sideways (rotate exit->edge normal).
 # style "flat" = vertical SMD jack, cable exits perpendicular (off the board face).
 VARIANTS = {
-    # straight (vertical) SMD MCX jack: cable exits up; signal pad reachable between
-    # the four corner grounds, so it routes like U.FL (smd, no centre via).
-    "mcx": dict(fp="Samtec_MCX-J-P-X-ST-SM1",           exit=(0, 1),  pitch=9.0, style="flat"),
+    # straight (vertical) THROUGH-HOLE MCX jack (MCX-J-P-H-ST-TH1): signal pin is plated
+    # through all layers, so the QSE B.Cu channel escape lands directly on it with NO
+    # face-change via. Centered signal pad -> orientation-independent. style "tht" places
+    # it like a flat jack (cable exits up) but its through-hole pad needs no jack-side via.
+    "mcx": dict(fp="Samtec_MCX-J-P-H-ST-TH1",           exit=(0, 1),  pitch=8.0, style="tht"),
     "sma": dict(fp="SMA_Amphenol_901-143_Horizontal",   exit=(0, -1), pitch=10.0, style="edge"),
     "ufl": dict(fp="U.FL_Hirose_U.FL-R-SMT-1_Vertical",  exit=(0, 1),  pitch=6.0, style="flat"),
     # SMP vertical SMD (Amphenol SMP-MSLD-PCS-20): signal is an external tab on one
@@ -51,19 +53,16 @@ EDGE_GAP = 26.0    # mm QSE edge -> jack column; long run keeps the fan diagonal
                    # shallow enough that 50-ohm-width traces clear at the dense escape
 STAGGER = 0.0      # single column per edge (order-preserving fan routes cleanly)
 
-# Flange grouping: each cluster of jacks bundles to one vacuum feedthrough flange.
-# 12 K-channels -> flange 1 (west), 12 -> flange 2 (east), IV -> flange 3 (north).
-# Split chosen (flexible per Lucas) to align with the QSE pin rows: the odd-pin row
-# carries K8-K15 (8) and the even-pin row K0-K7 + K16-K23 (16). Putting all 8 odd
-# (K8-K15) + K0-K3 on the west cluster and the rest east leaves only K0-K3 crossing
-# the connector (routed on the bottom layer) -- the theoretical minimum for 12/12.
-WEST = [f"SIPM_K{i}" for i in (0, 1, 2, 3, 8, 9, 10, 11, 12, 13, 14, 15)]
-EAST = [f"SIPM_K{i}" for i in (4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23)]
-GROUPS = [
-    ("west",  WEST),     # flange 1
-    ("east",  EAST),     # flange 2
-    ("north", ["IV"]),   # flange 3
-]
+# Jack-to-edge assignment. The QSE-040's two pin rows split the 24 channels 8 (west,
+# the odd-pin row K8-K15) / 16 (east, K0-K7 + K16-K23); IV is in the east row.
+#   "planar"   -> each jack goes on the edge matching its own QSE pin column. The fan is
+#                 then monotonic on a single layer per side: ZERO connector crossings,
+#                 ZERO signal vias (with through-hole jacks). Edge counts are 8 / 16+IV.
+#   "balanced" -> force an even 12/12 jacks-per-edge (equal flange cable bundles) by
+#                 spilling the 4 east channels nearest the west centroid onto the west
+#                 edge; those 4 must cross the connector on the other layer (4 vias). This
+#                 is the pre-2026-07-15 behaviour, kept for when the flanges need 12/12.
+SPLIT = "planar"
 EDGE_NORMAL = {"west": (-1, 0), "east": (1, 0), "north": (0, -1), "south": (0, 1)}
 
 
@@ -132,30 +131,32 @@ class Builder:
         self.qse_ext = dict(left=min(xs), right=max(xs), top=min(ys), bottom=max(ys))
         self.cx = qse.GetPosition().x
 
-        # Choose the 12/12 flange split from real geometry to minimise crossings:
-        # each channel sits in the west or east pin column; give each edge cluster
-        # its own column's channels, and spill the larger column's surplus to the
-        # other edge (those few cross on the bottom layer).
+        # Assign each channel's jack to a board edge from real QSE geometry.
         ch = [f"SIPM_K{i}" for i in range(24)]
         west_col = sorted([s for s in ch if self.padpos[s][0] < self.cx],
                           key=lambda s: self.padpos[s][1])
         east_col = sorted([s for s in ch if self.padpos[s][0] > self.cx],
                           key=lambda s: self.padpos[s][1])
-        big, big_side, small, small_side = (
-            (west_col, "west", east_col, "east") if len(west_col) >= len(east_col)
-            else (east_col, "east", west_col, "west"))
-        need = 12 - len(small)
-        yc = sum(self.padpos[s][1] for s in small) / len(small)
-        spill = sorted(big, key=lambda s: abs(self.padpos[s][1] - yc))[:need]
-        small_cluster = sorted(small + spill, key=lambda s: self.padpos[s][1])
-        big_cluster = sorted([s for s in big if s not in spill],
-                             key=lambda s: self.padpos[s][1])
-        self.clusters = {big_side: big_cluster, small_side: small_cluster}
-        # IV (flange 3) routes cleanly inline on the edge matching its pin column,
-        # slotted at its natural pin-y rank; still a separate connector to cable out.
+        if SPLIT == "planar":
+            # each jack on the edge matching its own pin column -> monotonic single-layer
+            # fan, zero connector crossings, zero signal vias. Edge counts 8 / 16 (+IV).
+            self.clusters = {"west": west_col, "east": east_col}
+        else:  # "balanced": force even 12/12; spill the larger column's surplus (crosses)
+            big, big_side, small, small_side = (
+                (west_col, "west", east_col, "east") if len(west_col) >= len(east_col)
+                else (east_col, "east", west_col, "west"))
+            need = 12 - len(small)
+            yc = sum(self.padpos[s][1] for s in small) / len(small)
+            spill = sorted(big, key=lambda s: abs(self.padpos[s][1] - yc))[:need]
+            self.clusters = {
+                small_side: sorted(small + spill, key=lambda s: self.padpos[s][1]),
+                big_side: sorted([s for s in big if s not in spill],
+                                 key=lambda s: self.padpos[s][1]),
+            }
+        # IV routes inline on the edge matching its pin column, at its natural pin-y rank.
         iv_side = "east" if self.padpos["IV"][0] > self.cx else "west"
         self.clusters[iv_side] = self.clusters[iv_side] + ["IV"]
-        for side in (big_side, small_side):
+        for side in ("west", "east"):
             self._edge(self.clusters[side], side)
 
         self._outline_and_holes()

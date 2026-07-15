@@ -29,8 +29,8 @@ from pinout import J5_PINOUT, BREAKOUT_SIGNALS, EXCLUDED_SIGNALS, GROUND_NET
 OUT = os.path.join(os.path.dirname(HERE), "docs", "schematic", "ets-breakout.kicad_sch")
 NS = uuid.UUID("c7e5a9d1-0000-4000-8000-00000000e75b")  # ets-breakout schematic namespace
 VERSION = "20260306"
-JACK_VALUE = "MCX-J-P-H-ST-SM1"          # Board A (final variant); B/C/D differ only in jack part
-JACK_FP = "Samtec_MCX-J-P-X-ST-SM1"
+JACK_VALUE = "MCX-J-P-H-ST-TH1"          # Board A (final variant, through-hole); B/C/D differ only in jack part
+JACK_FP = "Samtec_MCX-J-P-H-ST-TH1"
 J5_FP = "SAMTEC_QSE-040-01-X-D-A"
 
 
@@ -90,7 +90,7 @@ def jack_symbol():
             '\t\t(property "Reference" "K" (at 0 6.35 0) (effects (font (size 1.27 1.27))))\n'
             '\t\t(property "Value" "%s" (at 0 -6.35 0) (effects (font (size 1.27 1.27))))\n'
             '\t\t(property "Footprint" "%s" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))\n'
-            '\t\t(property "Datasheet" "Samtec_MCX-J-P-X-ST-SM1.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))\n'
+            '\t\t(property "Datasheet" "mcx-j-p-x-st-th1-mkt.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))\n'
             '%s\n\t\t(symbol "COAX_JACK_1_1"\n%s\n\t\t)\n\t)' % (JACK_VALUE, JACK_FP, gfx, pins))
 
 
@@ -173,7 +173,7 @@ def main():
     nodes.append(text("GENERATED from pinout.py by tools/gen_schematic.py - do not hand-edit.", 190.5, 271.78))
     nodes.append(text("Reference schematic for human review; boards are generated directly from pinout.py.", 190.5, 276.86))
     nodes.append(text("IV spans J5 pins 40 + 42 (both labeled). THERM4/THERM5 not broken out (per spec).", 190.5, 281.94))
-    nodes.append(text("Jack part per variant: A=MCX-J-P-H-ST-SM1  B=901-143-6RFX  C=U.FL-R-SMT-1(10)  D=SMP-MSLD-PCS-20", 190.5, 287.02))
+    nodes.append(text("Jack part per variant: A=MCX-J-P-H-ST-TH1  B=901-143-6RFX  C=U.FL-R-SMT-1(10)  D=SMP-MSLD-PCS-20", 190.5, 287.02))
 
     tb = ('\t(title_block\n\t\t(title "ETS per-channel SiPM breakout - J5 fanout (25 coax jacks)")\n'
           '\t\t(date "2026-07-11")\n\t\t(company "Brunner lab")\n'

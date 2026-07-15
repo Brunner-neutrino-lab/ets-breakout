@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Emit a PCBWay-style BOM CSV for a board, grouped by part.
+"""Emit a fab-house BOM CSV for a board, grouped by part.
 
   "C:/Program Files/KiCad/10.0/bin/python.exe" tools/make_bom.py <board.kicad_pcb> <out.csv>
 """
@@ -12,8 +12,8 @@ import pcbnew
 PARTS = {
     "SAMTEC_QSE-040-01-X-D-A":
         ("QSE-040 board-to-board socket (mates detector QTE-040)", "Samtec", "QSE-040-01-L-D-A", "SAM8124-ND"),
-    "Samtec_MCX-J-P-X-ST-SM1":
-        ("MCX jack, straight (vertical) surface-mount, 50 ohm", "Samtec", "MCX-J-P-H-ST-SM1", "SAM10608-ND"),
+    "Samtec_MCX-J-P-H-ST-TH1":
+        ("MCX jack, straight (vertical) through-hole, 50 ohm", "Samtec", "MCX-J-P-H-ST-TH1", "SAM8944-ND"),
     "SMA_Amphenol_901-143_Horizontal":
         ("SMA jack, right-angle through-hole, 50 ohm", "Amphenol RF", "901-143-6RFX", "ARFX1232-ND"),
     "U.FL_Hirose_U.FL-R-SMT-1_Vertical":
