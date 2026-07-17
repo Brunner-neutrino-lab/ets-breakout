@@ -136,12 +136,14 @@ reference/                     read-only upstream snapshot (de-gitted) + UPSTREA
   only.** Full derivation (JLCPCB calculator RS_50 = 0.3244 mm + KiCad TransLine / IPC-2141
   microstrip, every input stated; 0.325 mm = JLC's own published 50 Ω single-ended width for
   JLC04161H-7628) is in [`docs/impedance.md`](docs/impedance.md).
-- **Assembly = fab-only + hand-solder; JLCPCB SMT assembly is NOT viable.** The exact 50 Ω THT
-  MCX (`MCX-J-P-H-ST-TH1`) is absent from LCSC (only the wrong-impedance 75 Ω
-  `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1` are stocked — neither acceptable).
-  `make_bom.py` now emits an **LCSC column**, populated honestly: MCX = "n/a – not LCSC-stocked;
-  hand-solder"; QSE = "C3652705 (-TR variant; info only)"; the Cinch IV cable adapter = n/a (not
-  board-mounted).
+- **Assembly:** default is **fab-only + hand-solder** (exact Samtec parts from DigiKey). An
+  optional **JLCPCB assembled build is viable** as a mixed SMT(QSE)+THT(MCX) job via LCSC:
+  QSE-040 = **C3652741** (exact Samtec, plain -A), MCX = **C5137197** (BAT Wireless `BWMCX-KE`
+  generic 50 Ω THT jack; alt `C49118404`). Both JLC-library *Extended*; the 25 THT jacks need
+  JLC's through-hole assembly add-on. **Gate:** the `BWMCX-KE` land pattern (centre signal + 4
+  grounds, 5.08 mm, drills 1.10/1.40) is not dimensionally verified — confirm against its drawing
+  before an assembled order, else fall back to the Samtec hand-solder part. `make_bom.py` emits
+  the **LCSC column** (MCX C5137197, QSE C3652741; Cinch IV cable adapter = n/a).
 - **U.FL is low-voltage** (~60 V) vs bias up to ~70 V — use U.FL only on un-biased / low-V channels.
 - Open (housekeeping, non-blocking): impedance is nominal until confirmed against the fab
   stackup. Boards remain generated directly from `pinout.py` (no netlist-driven flow), but a

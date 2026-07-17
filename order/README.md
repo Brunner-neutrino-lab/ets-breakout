@@ -19,11 +19,13 @@ see [`../docs/BOM.md`](../docs/BOM.md) §Purchase order.
 
 ## Order 1 — PCBs at JLCPCB (~$90 + ~$28 DHL)
 
-> **Fab-only order — hand-solder, no JLC assembly.** JLCPCB fabricates the bare PCBs only;
-> do **not** add SMT/PCBA assembly to this order. The 50 Ω through-hole MCX
-> (`MCX-J-P-H-ST-TH1`) is **not stocked at LCSC** — LCSC lists only the wrong-impedance 75 Ω
-> `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1`, neither acceptable — so every
-> connector is ordered from DigiKey (Order 2) and hand/selective-soldered in the lab.
+> **This order is bare-PCB fab + hand-solder** (default): JLCPCB fabricates the boards, the
+> connectors come from DigiKey (Order 2) and are hand/selective-soldered. An **assembled
+> JLCPCB build is possible instead** — mixed SMT(QSE)+THT(MCX) using LCSC QSE `C3652741` +
+> MCX `C5137197` (BAT Wireless `BWMCX-KE` generic 50 Ω THT jack; alt `C49118404`), both
+> *Extended* parts, MCX needs JLC's through-hole assembly add-on. Before choosing assembly,
+> confirm the `BWMCX-KE` land pattern matches our footprint (centre signal + 4 grounds,
+> 5.08 mm, drills 1.10/1.40) — it's a generic equivalent, not dimensionally verified.
 
 Go to [jlcpcb.com](https://jlcpcb.com) → **Instant Quote** → upload `board-A-mcx-jlcpcb.zip`
 (**regenerated 2026-07-17** for the rebalanced layout — re-upload this current zip, not
@@ -92,6 +94,6 @@ SAM8124-ND, 5
 
 ## Checklist before submitting
 
-- [ ] JLCPCB: **fab-only** (no assembly), current (2026-07-17) zip, qty **5**, stackup **JLC04161H-7628**, impedance control ON, ENIG, remark pasted
+- [ ] JLCPCB: **bare-PCB fab** (default; assembly optional — see the intro note + LCSC PNs), current (2026-07-17) zip, qty **5**, stackup **JLC04161H-7628**, impedance control ON, ENIG, remark pasted
 - [ ] DigiKey: SAM8944-ND (THT MCX) ×120 + SAM8124-ND ×5 + 1097-1372-ND ×4, no substitutions outside the rules above
 - [ ] Both orders ship to the lab as usual

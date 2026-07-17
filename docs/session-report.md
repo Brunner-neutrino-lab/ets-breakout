@@ -268,12 +268,17 @@ If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 > IPC-2141 microstrip formula, every input stated. 0.325 mm is JLC's own published 50 Ω single-ended
 > width for the `JLC04161H-7628` stackup; order as controlled impedance.
 >
-> **LCSC / assembly — SMT not viable:** **JLCPCB SMT assembly is NOT viable** for this board; it stays
-> **fab-only + hand-solder**. The exact 50 Ω THT MCX (`MCX-J-P-H-ST-TH1`) is absent from LCSC — LCSC
-> stocks only the wrong-impedance 75 Ω `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1`,
-> neither acceptable. A new **LCSC** column is populated honestly in the fab BOM (`make_bom.py` now
-> emits it): MCX = "n/a — not LCSC-stocked; hand-solder"; QSE = "C3652705 (-TR variant; info only)";
-> the Cinch cable adapter = n/a (not board-mounted). **Unchanged:** the THT part (Samtec
+> **LCSC / assembly:** default build is **fab-only + hand-solder** (exact Samtec parts from DigiKey).
+> An optional **JLCPCB assembled build is viable** as a mixed SMT(QSE)+THT(MCX) job — LCSC PNs
+> supplied by Lucas and vetted 2026-07-17: QSE-040 = **C3652741** (exact Samtec plain -A), MCX =
+> **C5137197** (BAT Wireless `BWMCX-KE`, a generic 50 Ω THT MCX jack; deepest stock; alt
+> `C49118404`; `C20415820` weakest). Both are JLC-library *Extended* parts and the 25 THT jacks
+> need JLC's through-hole assembly add-on. **Gate:** the `BWMCX-KE` land pattern wasn't
+> dimensionally verified against our footprint (centre signal + 4 grounds, 5.08 mm, 1.10/1.40
+> drills) — confirm before an assembled order, else hand-solder the Samtec part. (Earlier this
+> session an LCSC search wrongly concluded no MCX existed; Lucas's C-numbers corrected that.) A
+> new **LCSC** column in the fab BOM carries MCX `C5137197` + QSE `C3652741`; the Cinch cable
+> adapter = n/a (not board-mounted). **Unchanged:** the THT part (Samtec
 > `MCX-J-P-H-ST-TH1` / DigiKey SAM8944-ND), footprint `Samtec_MCX-J-P-H-ST-TH1`, JLCPCB-only fab,
 > quantities (MCX 120, QSE 5, IV adapter 4), DigiKey subtotal $831.19, system ≈ $950, QSE = SAM8124-ND,
 > IV adapter Cinch 3-0347-9 / 1097-1372-ND, and `pinout.py` as the single source of truth.

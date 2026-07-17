@@ -16,8 +16,8 @@ label next to its jack; mounting-hole designators (MH1…) are hidden on silk.
 
 | Item | Manufacturer | MPN | Digi-Key | LCSC | Qty/board | Board(s) | Notes |
 |------|--------------|-----|----------|------|:---------:|:--------:|-------|
-| J5 socket | Samtec | QSE-040-01-L-D-A | SAM8124-ND | C3652705 (-TR; info) | 1 | A B C D | detector-side socket; mounts on the back face. Plain (tray) suffix — do **not** sub `-RT1` (needs retention holes we don't have). LCSC `C3652705` is the tape-and-reel `-RT1` variant, listed for reference only — order the plain suffix from Digi-Key |
-| MCX jack | Samtec | MCX-J-P-H-ST-TH1 | SAM8944-ND | n/a — not LCSC-stocked; hand-solder | 25 | A | straight (vertical) **through-hole**, 50 Ω, 6 GHz — **confirmed orderable** (Active, verified 2026-07-15). THT signal pin plated through all layers ⇒ B.Cu channel escape lands on it with no face-change via (zero signal vias). Not stocked at LCSC (only the wrong-impedance 75 Ω `MCX7-J-P-H-ST-TH1` / wrong-series `MMCX-J-P-H-ST-TH1` appear) ⇒ hand-solder |
+| J5 socket | Samtec | QSE-040-01-L-D-A | SAM8124-ND | C3652741 | 1 | A B C D | detector-side socket; mounts on the back face. Plain (tray) suffix — do **not** sub `-RT1` (needs retention holes we don't have). LCSC `C3652741` = the exact plain -A part (JLC assembly-capable) |
+| MCX jack | Samtec | MCX-J-P-H-ST-TH1 | SAM8944-ND | C5137197 | 25 | A | straight (vertical) **through-hole**, 50 Ω, 6 GHz — **confirmed orderable** (Active, verified 2026-07-15). THT signal pin plated through all layers ⇒ B.Cu channel escape lands on it with no face-change via (zero signal vias). LCSC `C5137197` (BAT Wireless `BWMCX-KE`) is a generic 50 Ω THT MCX for optional JLC assembly — **confirm its land pattern** before an assembled order; alt `C49118404` |
 | SMA jack | Amphenol RF | 901-143-6RFX | ARFX1232-ND | — | 25 | B | right-angle through-hole, 50 Ω |
 | U.FL jack | Hirose | U.FL-R-SMT-1(10) | — | — | 25 | C | SMT, 50 Ω — **≤60 V** working voltage (low-bias channels only) |
 | SMP jack | Amphenol RF | SMP-MSLD-PCS-20 | — | — | 25 | D | vertical SMT, 50 Ω, 4.08 mm max height |
@@ -62,11 +62,18 @@ SAM8124-ND, 5
   derivation (JLC calculator RS_50 = 0.3244 mm + KiCad TransLine / IPC-2141 microstrip
   formula, every input stated): [`impedance.md`](impedance.md).
 - **ENIG recommended** over HASL: flatter pads for the 0.8 mm-pitch QSE-040.
-- **JLCPCB SMT assembly is NOT viable — order Board A fab-only + hand-solder.** The exact
-  50 Ω THT MCX (`MCX-J-P-H-ST-TH1`) is **not stocked at LCSC** (LCSC lists only the
-  wrong-impedance 75 Ω `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1` — neither
-  acceptable), so the jacks cannot be JLC-placed. Hand-solder the THT MCX jacks (not reflow);
-  the SMD QSE-040 can be reflowed or hand-soldered. See the **LCSC** column in the master BOM.
+- **Assembly — default fab-only + hand-solder; optional JLCPCB assembly is possible.** The
+  baseline is a bare-PCB fab + hand-solder of the exact Samtec parts from DigiKey (THT MCX
+  jacks are hand/selective-soldered, not reflow; the SMD QSE reflows or hand-solders). An
+  **assembled JLCPCB build** is available as a mixed SMT(QSE)+THT(MCX) job using LCSC parts —
+  QSE = **C3652741** (exact Samtec, plain -A), MCX = **C5137197** (BAT Wireless `BWMCX-KE`, a
+  generic 50 Ω THT MCX jack; second source **C49118404**). Both are JLC-library *Extended*
+  parts (per-reel feeder fee) and the 25 THT MCX jacks require JLC's through-hole/wave-solder
+  assembly add-on (price it in the quote). **Gate before an assembled order:** confirm the
+  `BWMCX-KE` land pattern matches our footprint (centre signal + 4 grounds on 5.08 mm, drills
+  1.10/1.40) — it's a generic equivalent whose drawing was not dimensionally verified; if it
+  deviates, adjust the footprint or fall back to hand-soldering the Samtec part. See the
+  **LCSC** column in the master BOM.
 - Jack/socket caveats: MCX `-H-ST-TH1` is the through-hole part — do **not** cross with the
   75 Ω `MCX7-J-P-H-ST-TH1` (SAM8945-ND) or the smaller `MMCX-J-P-H-ST-TH1` (SAM10617-ND). The
   right-angle THT `MCX-J-P-H-RA-TH1` (SAM10607-ND) is a valid mechanical alternative but needs

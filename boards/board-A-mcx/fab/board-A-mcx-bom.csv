@@ -1,4 +1,4 @@
 Designators,Qty,Description,Manufacturer,MPN,Digi-Key,LCSC,KiCad Footprint
-"J10, J11, J12, J13, J14, J15, J16, J17, J18, J19, J20, J21, J22, J23, J24, J25, J26, J27, J28, J29, J30, J6, J7, J8, J9",25,"MCX jack, straight (vertical) through-hole, 50 ohm",Samtec,MCX-J-P-H-ST-TH1,SAM8944-ND,n/a - not LCSC-stocked; hand-solder,Samtec_MCX-J-P-H-ST-TH1
+"J10, J11, J12, J13, J14, J15, J16, J17, J18, J19, J20, J21, J22, J23, J24, J25, J26, J27, J28, J29, J30, J6, J7, J8, J9",25,"MCX jack, straight (vertical) through-hole, 50 ohm",Samtec,MCX-J-P-H-ST-TH1,SAM8944-ND,C5137197 (BWMCX-KE equiv; confirm footprint),Samtec_MCX-J-P-H-ST-TH1
 "MH1, MH2, MH3, MH4",4,"M3 mounting hole, non-plated",,,,,MountingHole_3.2mm_M3
-J5,1,QSE-040 board-to-board socket (mates detector QTE-040),Samtec,QSE-040-01-L-D-A,SAM8124-ND,C3652705 (-TR variant; hand-solder),SAMTEC_QSE-040-01-X-D-A
+J5,1,QSE-040 board-to-board socket (mates detector QTE-040),Samtec,QSE-040-01-L-D-A,SAM8124-ND,C3652741,SAMTEC_QSE-040-01-X-D-A
