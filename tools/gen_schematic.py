@@ -155,8 +155,8 @@ def main():
             nodes.append(wire(px, py, ex, py))
             nodes.append(label(net, ex, py, just))
 
-    # ---- jacks: refs match the board (K0..K23 + IV) ----
-    jacks = [("K%d" % i, "SIPM_K%d" % i) for i in range(24)] + [("IV", "IV")]
+    # ---- jacks: refs match the board (J6..J30; channel identity is the net label) ----
+    jacks = [("J%d" % (6 + i), "SIPM_K%d" % i) for i in range(24)] + [("J30", "IV")]
     cols, dx, dy, x0, y0 = 5, 45.72, 45.72, 190.5, 50.8
     for n, (ref, net) in enumerate(jacks):
         jx = round(x0 + (n % cols) * dx, 2)

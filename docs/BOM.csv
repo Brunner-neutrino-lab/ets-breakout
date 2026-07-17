@@ -1,7 +1,7 @@
-Item,Manufacturer,MPN,Digi-Key,Description,Qty per board,Boards,Footprint,Symbol,Datasheet,3D Model
-J5 socket,Samtec,QSE-040-01-L-D-A,SAM8124-ND,QSE-040 board-to-board socket (mates detector QTE-040),1,"A,B,C,D",SAMTEC_QSE-040-01-X-D-A,QSE-040-01-X-D-A,Samtec_QSE.pdf,QSE-040-01-L-D-A.stp
-Coax jack (Board A),Samtec,MCX-J-P-H-ST-TH1,SAM8944-ND,MCX jack straight vertical through-hole 50 ohm 6 GHz (confirmed orderable 2026-07-15),25,A,Samtec_MCX-J-P-H-ST-TH1,MCX-J-P-X-ST-SM1,mcx-j-p-x-st-th1-mkt.pdf,(none - gap; vertical THT model needed)
-Coax jack (Board B),Amphenol RF,901-143-6RFX,ARFX1232-ND,SMA jack right-angle through-hole 50 ohm,25,B,SMA_Amphenol_901-143_Horizontal,SMA_Amphenol_901-143_Horizontal,Amphenol_901-143-6RFX.pdf,(none - vendor-gated)
-Coax jack (Board C),Hirose,U.FL-R-SMT-1(10),,U.FL jack SMT 50 ohm (<=60 V working voltage),25,C,U.FL_Hirose_U.FL-R-SMT-1_Vertical,U.FL-R-SMT-1_10_,Hirose_U.FL-R-SMT-1.pdf,U.FL_Hirose_U.FL-R-SMT-1_Vertical.step
-Coax jack (Board D),Amphenol RF,SMP-MSLD-PCS-20,,SMP jack vertical SMT 50 ohm (4.08 mm max height),25,D,SMP_Amphenol_SMP-MSLD-PCS-20,SMP_Amphenol_SMP-MSLD-PCS-20,Amphenol_SMP-MSLD-PCS.pdf,SMP-MSLD-PCS-20.stp
-Mounting hole,,,,M3 mounting hole non-plated,4,"A,B,C,D",MountingHole_3.2mm_M3,,,
+Item,Manufacturer,MPN,Digi-Key,LCSC,Description,Qty per board,Boards,Footprint,Symbol,Datasheet,3D Model
+J5 socket,Samtec,QSE-040-01-L-D-A,SAM8124-ND,C3652705 (-TR; info),QSE-040 board-to-board socket (mates detector QTE-040),1,"A,B,C,D",SAMTEC_QSE-040-01-X-D-A,QSE-040-01-X-D-A,Samtec_QSE.pdf,QSE-040-01-L-D-A.stp
+Coax jack (Board A),Samtec,MCX-J-P-H-ST-TH1,SAM8944-ND,n/a - not LCSC-stocked; hand-solder,MCX jack straight vertical through-hole 50 ohm 6 GHz (confirmed orderable 2026-07-15),25,A,Samtec_MCX-J-P-H-ST-TH1,MCX-J-P-X-ST-SM1,mcx-j-p-x-st-th1-mkt.pdf,(none - gap; vertical THT model needed)
+Coax jack (Board B),Amphenol RF,901-143-6RFX,ARFX1232-ND,,SMA jack right-angle through-hole 50 ohm,25,B,SMA_Amphenol_901-143_Horizontal,SMA_Amphenol_901-143_Horizontal,Amphenol_901-143-6RFX.pdf,(none - vendor-gated)
+Coax jack (Board C),Hirose,U.FL-R-SMT-1(10),,,U.FL jack SMT 50 ohm (<=60 V working voltage),25,C,U.FL_Hirose_U.FL-R-SMT-1_Vertical,U.FL-R-SMT-1_10_,Hirose_U.FL-R-SMT-1.pdf,U.FL_Hirose_U.FL-R-SMT-1_Vertical.step
+Coax jack (Board D),Amphenol RF,SMP-MSLD-PCS-20,,,SMP jack vertical SMT 50 ohm (4.08 mm max height),25,D,SMP_Amphenol_SMP-MSLD-PCS-20,SMP_Amphenol_SMP-MSLD-PCS-20,Amphenol_SMP-MSLD-PCS.pdf,SMP-MSLD-PCS-20.stp
+Mounting hole,,,,,M3 mounting hole non-plated,4,"A,B,C,D",MountingHole_3.2mm_M3,,,

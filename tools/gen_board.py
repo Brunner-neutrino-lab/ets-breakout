@@ -55,19 +55,29 @@ STAGGER = 0.0      # single column per edge (order-preserving fan routes cleanly
 
 # Jack-to-edge assignment. The QSE-040's two pin rows split the 24 channels 8 (west,
 # the odd-pin row K8-K15) / 16 (east, K0-K7 + K16-K23); IV is in the east row.
-#   "planar"   -> each jack goes on the edge matching its own QSE pin column. The fan is
-#                 then monotonic on a single layer per side: ZERO connector crossings,
-#                 ZERO signal vias (with through-hole jacks). Edge counts are 8 / 16+IV.
-#   "balanced" -> force an even 12/12 jacks-per-edge (equal flange cable bundles) by
-#                 spilling the 4 east channels nearest the west centroid onto the west
-#                 edge; those 4 must cross the connector on the other layer (4 vias). This
-#                 is the pre-2026-07-15 behaviour, kept for when the flanges need 12/12.
-SPLIT = "planar"
+#   "balanced" -> balance the two edges ~12/13 for a compact, symmetric board. Each edge's
+#                 jacks are ordered by their QSE pin so every native route is a straight
+#                 line; the surplus of the larger (east) column spills its END-most channels
+#                 (K4-K7) onto the west edge, where they WRAP around the connector end on
+#                 B.Cu (FreeRouting, single signal layer -> still ZERO signal vias). This is
+#                 the engineer-reviewed layout (2026-07-17).
+#   "planar"   -> each jack on the edge matching its own QSE pin column: monotonic single-
+#                 layer fan, zero wrap, but lopsided edge counts 8 / 16+IV.
+SPLIT = "balanced"
 EDGE_NORMAL = {"west": (-1, 0), "east": (1, 0), "north": (0, -1), "south": (0, 1)}
 
 
 def short(sig):
     return sig.replace("SIPM_", "")
+
+
+def jack_ref(sig):
+    """Reference designator for a coax jack. Jacks are connectors -> 'J' (not 'K', which is a
+    relay). The detector socket keeps J5 (upstream mapping), so jacks are J6..J30: K0->J6 ...
+    K23->J29, IV->J30. The channel identity (K0..K23, IV) goes on the silkscreen next to the jack."""
+    if sig == "IV":
+        return "J30"
+    return "J%d" % (6 + int(sig.replace("SIPM_K", "")))
 
 
 class Builder:
@@ -131,31 +141,36 @@ class Builder:
         self.qse_ext = dict(left=min(xs), right=max(xs), top=min(ys), bottom=max(ys))
         self.cx = qse.GetPosition().x
 
-        # Assign each channel's jack to a board edge from real QSE geometry.
+        # Assign each channel's jack to a board edge from real QSE geometry, in QSE-pin
+        # (pad-y) order so every native route is a straight line.
         ch = [f"SIPM_K{i}" for i in range(24)]
-        west_col = sorted([s for s in ch if self.padpos[s][0] < self.cx],
-                          key=lambda s: self.padpos[s][1])
-        east_col = sorted([s for s in ch if self.padpos[s][0] > self.cx],
-                          key=lambda s: self.padpos[s][1])
-        if SPLIT == "planar":
-            # each jack on the edge matching its own pin column -> monotonic single-layer
-            # fan, zero connector crossings, zero signal vias. Edge counts 8 / 16 (+IV).
-            self.clusters = {"west": west_col, "east": east_col}
-        else:  # "balanced": force even 12/12; spill the larger column's surplus (crosses)
-            big, big_side, small, small_side = (
-                (west_col, "west", east_col, "east") if len(west_col) >= len(east_col)
-                else (east_col, "east", west_col, "west"))
-            need = 12 - len(small)
-            yc = sum(self.padpos[s][1] for s in small) / len(small)
-            spill = sorted(big, key=lambda s: abs(self.padpos[s][1] - yc))[:need]
-            self.clusters = {
-                small_side: sorted(small + spill, key=lambda s: self.padpos[s][1]),
-                big_side: sorted([s for s in big if s not in spill],
-                                 key=lambda s: self.padpos[s][1]),
-            }
-        # IV routes inline on the edge matching its pin column, at its natural pin-y rank.
+        yk = lambda s: self.padpos[s][1]
+        west_col = sorted([s for s in ch if self.padpos[s][0] < self.cx], key=yk)
+        east_col = sorted([s for s in ch if self.padpos[s][0] > self.cx], key=yk)
         iv_side = "east" if self.padpos["IV"][0] > self.cx else "west"
-        self.clusters[iv_side] = self.clusters[iv_side] + ["IV"]
+        if SPLIT == "balanced":
+            # spill the larger column's surplus to the small edge, split between its TWO ends
+            # so the wraps form only ~2 concentric arcs per connector corner (4 around one
+            # corner is too tight to route on a single layer). Native jacks stay in pin order
+            # (straight); the top-spill wraps the top corner, the bottom-spill the bottom.
+            big, big_side, small, small_side = (
+                (east_col, "east", west_col, "west") if len(east_col) >= len(west_col)
+                else (west_col, "west", east_col, "east"))
+            n = (len(big) - len(small)) // 2                     # 4 -> 12 small / 12 big (+IV)
+            nt, nb = n // 2, n - n // 2                          # 2 top-corner, 2 bottom-corner
+            top_spill = big[:nt]
+            bot_spill = big[len(big) - nb:]
+            big_keep = big[nt:len(big) - nb]
+            clusters = {big_side: sorted(big_keep, key=yk), small_side: sorted(small, key=yk)}
+            # IV inline on its native edge, at its pin-y rank (still a straight route)
+            clusters[iv_side] = sorted(clusters[iv_side] + ["IV"], key=yk)
+            # small edge, top->bottom: top-corner wraps, native fan (pin order), bottom wraps
+            clusters[small_side] = (sorted(top_spill, key=yk) + clusters[small_side]
+                                    + sorted(bot_spill, key=yk))
+            self.clusters = clusters
+        else:  # "planar": each jack on its own pin column's edge (lopsided, zero wrap)
+            self.clusters = {"west": west_col, "east": east_col}
+            self.clusters[iv_side] = sorted(self.clusters[iv_side] + ["IV"], key=yk)
         for side in ("west", "east"):
             self._edge(self.clusters[side], side)
 
@@ -181,8 +196,8 @@ class Builder:
         normal = EDGE_NORMAL[side]
         pitch = self.cfg["pitch"]
         horiz = side in ("north", "south")          # step along X (else along Y)
-        # order within the cluster by the pin coordinate to reduce crossing
-        sigs = sorted(sigs, key=lambda s: self.padpos[s][0 if horiz else 1])
+        # sigs arrive pre-ordered from build() (native jacks in pin order, then wrapped ones);
+        # preserve that order so native routes stay straight and wrapped ones tuck in at the end
         flat = self.cfg["style"] != "edge"
         rot = 0.0 if flat else self.rot_to(self.cfg["exit"], normal)
         e = self.qse_ext
@@ -197,11 +212,28 @@ class Builder:
             else:
                 y = span0 + i * pitch
                 x = base + normal[0] * stag
-            fp = self.add_fp(LIB, self.cfg["fp"], short(sig), x, y, rot)
+            fp = self.add_fp(LIB, self.cfg["fp"], jack_ref(sig), x, y, rot)
             if flat:
                 self._face_signal_to_qse(fp, side)  # aim the signal pad inward
             self.pad_net(fp, SIG_PAD, sig)
             self.pad_net(fp, GND_PAD, GND_NET)
+            self._channel_label(short(sig), x, y, side, horiz)
+
+    def _channel_label(self, text, x, y, side, horiz):
+        """Silk channel indicator (K0..K23 / IV) just inboard of the jack, toward the QSE,
+        clear of the jack pads and its neighbours (the ref designator J.. sits on the far side)."""
+        off = 5.5
+        if horiz:
+            tx, ty = x, y - off * EDGE_NORMAL[side][1]
+        else:
+            tx, ty = x - off * EDGE_NORMAL[side][0], y
+        t = pcbnew.PCB_TEXT(self.board)
+        t.SetText(text)
+        t.SetLayer(pcbnew.F_SilkS)
+        t.SetPosition(V(tx, ty))
+        t.SetTextSize(pcbnew.VECTOR2I(MM(1.2), MM(1.2)))
+        t.SetTextThickness(MM(0.2))
+        self.board.Add(t)
 
     def _sig_local(self, fp):
         """Signal pad offset from the footprint origin (board units), as (dx, dy)."""
@@ -266,6 +298,7 @@ class Builder:
             mh = pcbnew.FootprintLoad(MOUNT_LIB, "MountingHole_3.2mm_M3")
             self.board.Add(mh)
             mh.SetReference(f"MH{i}")
+            mh.Reference().SetVisible(False)   # designator not wanted on silk (engineer note)
             mh.SetPosition(pcbnew.VECTOR2I(int(hx), int(hy)))
 
 

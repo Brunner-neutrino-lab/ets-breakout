@@ -11,15 +11,17 @@ relay multiplexer in the Brunner-lab **ETS-96-channel-IV-pulse-mux** system. Eac
 board mates the detector-side **QSE-040-01-L-D-A** socket (connector **J5**) and
 fans every channel out to its own coax jack — 24× `SIPM_K0..K23` + `IV` = 25 jacks
 per board. The 96-channel system uses 4 identical boards (same J5 pinout in every
-position).
+position). **Designators:** the socket keeps **J5** (upstream mapping); the jacks are
+**J6..J30** (K0→J6 … K23→J29, IV→J30), each with its channel identity (`K0..K23`, `IV`) as a
+**silkscreen label**. Mounting-hole designators (MH…) are hidden on silk.
 
 **J5 mounts on the BACK face (B.Cu); all coax jacks are on the FRONT (F.Cu)** — the
 detector plugs into the back, cables come off the front. J5 is flipped in `gen_board.py`.
-**Board A (MCX)** is FreeRouting-autorouted as an all-B.Cu planar fan with **zero signal
-vias** (its through-hole jacks plate the signal through every layer). **Boards B/C/D** use
-the deterministic router (`finalize_board.py`), which reads which face J5 is on and routes
-escapes on that layer (HOME), hopping to the other signal layer (OTHER) only for the
-crossing fans.
+**Board A (MCX)** is FreeRouting-autorouted as an all-B.Cu **balanced ~12/13** planar fan with
+**zero signal vias** (its through-hole jacks plate the signal through every layer; 4 spilled
+channels wrap the connector ends on B.Cu). **Boards B/C/D** use the deterministic router
+(`finalize_board.py`), which reads which face J5 is on and routes escapes on that layer (HOME),
+hopping to the other signal layer (OTHER) only for the crossing fans.
 
 | Board | Jacks | Part | Status |
 |-------|-------|------|--------|
@@ -62,7 +64,7 @@ All `tools/*.py` run under the KiCad bundled interpreter
 
 ```
 # Board A (MCX, through-hole) — FreeRouting autoroute, ZERO signal vias:
-tools/gen_board.py mcx                 # placement + nets + outline + holes (8/16 planar split)
+tools/gen_board.py mcx                 # placement + nets + outline + holes (balanced ~12/13; SPLIT="planar" = old 8/16)
 tools/finalize_board.py <pcb> setup    # 4-layer stackup + GND zones (NO routes yet)
 tools/export_dsn.py <pcb> B.Cu         # write Specctra .dsn for the router
 #   -> FreeRouting v2.2.4 (java) autoroute -> .ses   (see docs/FREEROUTING or the amplifier recipe)
@@ -84,17 +86,20 @@ kicad-cli pcb export gerbers|drill|pos ... ; tools/make_bom.py <pcb> <csv>   # f
 pcbnew gotchas (shared with the SMP-feedthrough project):
 - Headless `ZONE_FILLER.Fill()` **segfaults** on the in-memory board → `fill_zones.py`
   runs as a separate pass on the saved file.
-- **Board A routing = 8/16 planar, autorouted.** The QSE's two pin rows split the 24
-  channels 8 (west = K8-K15, the odd-pin row) / 16 (east = K0-K7,K16-K23) + IV, so each jack
-  sits on the edge of its own QSE pin column — a monotonic single-layer B.Cu fan with **zero
-  connector crossings and zero signal vias** (the through-hole MCX signal pin is plated
-  through every layer, so the B.Cu escape lands on it with no face-change via). FreeRouting
-  (`export_dsn.py` → FreeRouting v2.2.4 → `import_ses.py`) does the autoroute.
+- **Board A routing = balanced ~12/13 planar, autorouted (engineer-reviewed).** The 25 jacks
+  split 12 west / 13 east and are **ordered by their QSE pin** so every native channel escapes
+  as a **straight line**: west = K8-K15 (native) + K16,K17 (wrap top corner) + K6,K7 (wrap
+  bottom corner); east = K18-K23, IV, K0-K5. The 4 spilled channels **wrap around the connector
+  ends on B.Cu** (2 per corner) — still a single-layer B.Cu fan with **zero connector crossings
+  and zero signal vias** (the through-hole MCX signal pin is plated through every layer, so the
+  B.Cu escape lands on it with no face-change via). Balancing shrank the board 75×157 → **75.0 ×
+  125.2 mm** (−32 mm). FreeRouting (`export_dsn.py` → FreeRouting v2.2.4 → `import_ses.py`) does
+  the autoroute. The old lopsided 8/16 fan is retained as the `gen_board` `SPLIT="planar"`
+  option; `SPLIT="balanced"` is the default for Board A.
 - **Boards B/C/D routing** = the deterministic router: escape past the QSE pads → one
   straight diagonal → straight into the signal pad between grounds (monotonic fan ⇒ planar),
   with a 12/12 channel→flange split (computed from pad geometry to hit the 4-net crossing
-  floor, routed bottom). 12/12 is retained as the documented `SPLIT="balanced"` flag in
-  `gen_board.py`; Board A uses the 8/16 split.
+  floor, routed bottom), the documented `SPLIT="balanced"` flag in `gen_board.py`.
 - **Flat (vertical) jacks** (U.FL, MCX, SMP) are rotated by `_edge` so the
   signal pad faces the QSE (the side the trace approaches from). The signal pad's native
   direction varies per part (U.FL: -X edge; SMP-MSLD: +Y tab; MCX: centred), so the
@@ -122,11 +127,21 @@ reference/                     read-only upstream snapshot (de-gitted) + UPSTREA
 
 - All four boards: **0 DRC violations, 0 unconnected.** Fab packages are the
   `boards/board-*/*-fab.zip` (gerbers + Excellon drill + placement CSV + BOM CSV).
-  Board A has **0 signal vias** (GND stitching + island-tie vias only; all 25 nets on B.Cu).
-- Trace width **0.325 mm ≈ 50 Ω** single-ended microstrip on the JLCPCB **JLC04161H-7628**
-  4-layer 1.6 mm stackup (0.2104 mm 7628 prepreg to the adjacent inner GND plane, Dk 4.4),
-  GND pour clearance 0.30 mm — **order as controlled impedance** (JLC's impedance-control
-  option on that stackup) so JLC re-tunes the etched width. **Fab is JLCPCB only.**
+  Board A has **0 signal vias** (GND stitching + island-tie vias only; all 25 nets on B.Cu),
+  and after the balanced ~12/13 re-layout is **75.0 × 125.2 mm**.
+- Trace width **0.325 mm ≈ 50 Ω** (unchanged) single-ended microstrip on the JLCPCB
+  **JLC04161H-7628** 4-layer 1.6 mm stackup (0.2104 mm 7628 prepreg to the adjacent inner GND
+  plane, Dk 4.4), GND pour clearance 0.30 mm — **order as controlled impedance** (JLC's
+  impedance-control option on that stackup) so JLC re-tunes the etched width. **Fab is JLCPCB
+  only.** Full derivation (JLCPCB calculator RS_50 = 0.3244 mm + KiCad TransLine / IPC-2141
+  microstrip, every input stated; 0.325 mm = JLC's own published 50 Ω single-ended width for
+  JLC04161H-7628) is in [`docs/impedance.md`](docs/impedance.md).
+- **Assembly = fab-only + hand-solder; JLCPCB SMT assembly is NOT viable.** The exact 50 Ω THT
+  MCX (`MCX-J-P-H-ST-TH1`) is absent from LCSC (only the wrong-impedance 75 Ω
+  `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1` are stocked — neither acceptable).
+  `make_bom.py` now emits an **LCSC column**, populated honestly: MCX = "n/a – not LCSC-stocked;
+  hand-solder"; QSE = "C3652705 (-TR variant; info only)"; the Cinch IV cable adapter = n/a (not
+  board-mounted).
 - **U.FL is low-voltage** (~60 V) vs bias up to ~70 V — use U.FL only on un-biased / low-V channels.
 - Open (housekeeping, non-blocking): impedance is nominal until confirmed against the fab
   stackup. Boards remain generated directly from `pinout.py` (no netlist-driven flow), but a

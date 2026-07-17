@@ -1,8 +1,9 @@
 # Purchase handover — ETS breakout Board A (MCX), 96-channel system
 
 Everything needed to place the two orders is in this folder. No project context required.
-Part numbers, stock and prices were verified live **2026-07-15** (design state 2026-07-15,
-Board A redesigned to a **through-hole** MCX jack, board DRC-clean 0/0). Questions →
+Part numbers, stock and prices were verified live **2026-07-15**; **design state 2026-07-17**
+(Board A rebalanced to a ~12/13 jack split, **through-hole** MCX jack, board DRC-clean 0/0,
+fab zip regenerated). Questions →
 see [`../docs/BOM.md`](../docs/BOM.md) §Purchase order.
 
 **What this buys:** 5 PCBs (4 needed + 1 spare), connectors for 4 boards + 20 % spares, and
@@ -18,10 +19,16 @@ see [`../docs/BOM.md`](../docs/BOM.md) §Purchase order.
 
 ## Order 1 — PCBs at JLCPCB (~$90 + ~$28 DHL)
 
+> **Fab-only order — hand-solder, no JLC assembly.** JLCPCB fabricates the bare PCBs only;
+> do **not** add SMT/PCBA assembly to this order. The 50 Ω through-hole MCX
+> (`MCX-J-P-H-ST-TH1`) is **not stocked at LCSC** — LCSC lists only the wrong-impedance 75 Ω
+> `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1`, neither acceptable — so every
+> connector is ordered from DigiKey (Order 2) and hand/selective-soldered in the lab.
+
 Go to [jlcpcb.com](https://jlcpcb.com) → **Instant Quote** → upload `board-A-mcx-jlcpcb.zip`
-(**regenerated 2026-07-15** for the through-hole redesign — re-upload this current zip, not
-any earlier copy). The wizard auto-detects 4 layers and **75.0 × 157.2 mm** (the board grew
-taller because the east edge now carries 17 jacks). Set the fields:
+(**regenerated 2026-07-17** for the rebalanced layout — re-upload this current zip, not
+any earlier copy). The wizard auto-detects 4 layers and **75.0 × 125.2 mm** (the balanced
+~12/13 jack split shrank the board ~32 mm from the earlier revision). Set the fields:
 
 | Wizard field | Set to |
 |---|---|
@@ -44,10 +51,10 @@ Paste into the **PCB Remark** field:
 > referenced to the adjacent inner GND plane (0.2104 mm 7628 prepreg, Dk 4.4). Adjust
 > trace width to your etched stackup to hit 50 ohm (JLC04161H-7628 target is ~0.325 mm).
 
-Indicative quote for the 75.0 × 157.2 mm board: **~$85–95 ENIG qty 5** (engineering + board +
+Indicative quote for the 75.0 × 125.2 mm board: **~$85–95 ENIG qty 5** (engineering + board +
 impedance-control + file confirm + ENIG), 3–4 day build, DHL ~$28 — **re-quote in the wizard**,
-the board grew from the earlier revision. Still well under JLC's 650 cm² large-board surcharge
-at ~118 cm². HASL is cheaper if cost matters more than pad flatness.
+the board shrank from the earlier revision. Well under JLC's 650 cm² large-board surcharge
+at ~94 cm². HASL is cheaper if cost matters more than pad flatness.
 
 ## Order 2 — Connectors at DigiKey ($831.19)
 
@@ -85,6 +92,6 @@ SAM8124-ND, 5
 
 ## Checklist before submitting
 
-- [ ] JLCPCB: current (2026-07-15) zip, qty **5**, stackup **JLC04161H-7628**, impedance control ON, ENIG, remark pasted
+- [ ] JLCPCB: **fab-only** (no assembly), current (2026-07-17) zip, qty **5**, stackup **JLC04161H-7628**, impedance control ON, ENIG, remark pasted
 - [ ] DigiKey: SAM8944-ND (THT MCX) ×120 + SAM8124-ND ×5 + 1097-1372-ND ×4, no substitutions outside the rules above
 - [ ] Both orders ship to the lab as usual

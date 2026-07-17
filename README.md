@@ -19,6 +19,9 @@ instruments.
   come off the front.
 - Fans **25 signals → 25 coax jacks**: `SIPM_K0…K23` (24) + `IV` (1).
   `IV` is bussed on QSE pins 40 & 42 → one jack. `THERM4/THERM5` are **not** broken out.
+  The detector socket keeps designator **J5** (upstream mapping); the jacks are **J6…J30**
+  (K0→J6 … K23→J29, IV→J30), and each jack carries its channel identity (`K0…K23`, `IV`) as a
+  **silkscreen label**. Mounting-hole designators (MH…) are hidden on silk.
 - `GNDA` (52 signal-row pins + 8 G-pads) forms the ground/shield; a **guard ring** per
   channel tied to `GNDA`. No bias-tee / ESD diode / DC block.
 
@@ -63,7 +66,7 @@ All `tools/*.py` run under KiCad's bundled interpreter
 
 ```
 # Board A (MCX, through-hole) — FreeRouting autoroute, ZERO signal vias:
-tools/gen_board.py mcx                 # placement + nets + outline + holes (8/16 planar split)
+tools/gen_board.py mcx                 # placement + nets + outline + holes (balanced ~12/13 split; SPLIT="planar" = old 8/16)
 tools/finalize_board.py <pcb> setup    # 4-layer stackup + GND zones (no routes yet)
 tools/export_dsn.py <pcb> B.Cu         # write Specctra .dsn for the router
 #   -> FreeRouting v2.2.4 (java) autoroute -> .ses
@@ -82,15 +85,20 @@ kicad-cli pcb drc <pcb>
 kicad-cli pcb export gerbers|drill|pos ... ; tools/make_bom.py <pcb> <csv>   # fab outputs
 ```
 
-**Board A** routes as an **8/16 planar fan on B.Cu**: the QSE's two pin rows split the 24
-channels 8 (west) / 16 (east) + IV, so each jack sits on the edge of its own QSE pin column
-— a monotonic single-layer fan with **zero connector crossings and zero signal vias** (the
-through-hole MCX signal pin is plated through every layer, so the B.Cu escape lands on it
-with no face-change via). FreeRouting does the autoroute; only GND stitching + island-tie
-vias remain. **Boards B/C/D** still use the deterministic router — escape past the QSE pads →
-one straight diagonal to the jack → straight into the signal pad between grounds — with a
-12/12 split (retained as the `SPLIT="balanced"` flag) that crosses 4 channels on the bottom
-layer. Vertical jacks (U.FL, MCX, SMP) are auto-rotated so their signal pad faces the QSE.
+**Board A** routes as a **balanced ~12/13 planar fan on B.Cu** (engineer-reviewed). The 25
+jacks are split 12 on the west edge / 13 on the east and **ordered by their QSE pin** so every
+native channel escapes as a **straight line**: west = K8–K15 (native) + K16,K17 (wrapping the
+top corner) + K6,K7 (wrapping the bottom corner); east = K18–K23, IV, K0–K5. The 4 spilled
+channels **wrap around the connector ends on B.Cu** (2 per corner), so the fan stays **all-B.Cu
+with zero connector crossings and zero signal vias** (the through-hole MCX signal pin is plated
+through every layer, so the B.Cu escape lands on it with no face-change via). FreeRouting does
+the autoroute; only GND stitching + island-tie vias remain. Balancing shrank the board 32 mm
+(75 × 157 → **75.0 × 125.2 mm**). The old lopsided 8/16 fan is retained as the `gen_board`
+`SPLIT="planar"` option; `SPLIT="balanced"` is the default. **Boards B/C/D** still use the
+deterministic router — escape past the QSE pads → one straight diagonal to the jack → straight
+into the signal pad between grounds — with a 12/12 split (the `SPLIT="balanced"` flag) that
+crosses 4 channels on the bottom layer. Vertical jacks (U.FL, MCX, SMP) are auto-rotated so
+their signal pad faces the QSE.
 
 ## Status
 
@@ -100,18 +108,27 @@ vias** (GND stitching + island-tie vias only; all 25 nets on B.Cu).
 
 | Board | Connector | Size | Fab package |
 |-------|-----------|------|-------------|
-| A | MCX straight, through-hole (MCX-J-P-H-ST-TH1) | 75 × 157 mm | `boards/board-A-mcx/board-A-mcx-fab.zip` |
+| A | MCX straight, through-hole (MCX-J-P-H-ST-TH1) | 75.0 × 125.2 mm | `boards/board-A-mcx/board-A-mcx-fab.zip` |
 | B | SMA (901-143-6RFX) | 75 × 149 mm | `boards/board-B-sma/board-B-sma-fab.zip` |
 | C | U.FL (U.FL-R-SMT-1) | 70 × 99 mm | `boards/board-C-ufl/board-C-ufl-fab.zip` |
 | D | SMP (SMP-MSLD-PCS-20) | 75 × 120 mm | `boards/board-D-smp/board-D-smp-fab.zip` |
 
 Each fab zip = gerbers (4 copper + mask/silk/edge) + Excellon drill + position CSV + BOM CSV.
 
-**Impedance:** channel traces are **0.325 mm** wide ≈ 50 Ω single-ended microstrip on the
-JLCPCB **JLC04161H-7628** 4-layer 1.6 mm stack (0.2104 mm 7628 prepreg to the adjacent inner
-GND plane, Dk ≈ 4.4), GND pour held back 0.30 mm to limit coplanar coupling. **Order as
-controlled impedance** (JLC's impedance-control option on that stackup) so JLC re-tunes the
-etched width to their exact stackup.
+**Assembly:** Board A is **fab-only + hand-solder** — JLCPCB SMT assembly is **not viable**
+because the exact 50 Ω through-hole MCX (`MCX-J-P-H-ST-TH1`) is not LCSC-stocked (LCSC lists
+only the wrong-impedance 75 Ω `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1` —
+neither acceptable). The fab BOM (`make_bom.py`) now emits an **LCSC column**, populated
+honestly: MCX = "n/a – not LCSC-stocked; hand-solder"; QSE = "C3652705 (-TR variant; info
+only)"; the Cinch IV cable adapter = n/a (not board-mounted). Fab is **JLCPCB only**.
+
+**Impedance:** channel traces are **0.325 mm** wide (unchanged) ≈ 50 Ω single-ended microstrip
+on the JLCPCB **JLC04161H-7628** 4-layer 1.6 mm stack (0.2104 mm 7628 prepreg to the adjacent
+inner GND plane, Dk ≈ 4.4), GND pour held back 0.30 mm to limit coplanar coupling. 0.325 mm is
+JLC's own published 50 Ω single-ended width for JLC04161H-7628; the full derivation (JLCPCB
+calculator RS_50 = 0.3244 mm + KiCad TransLine / IPC-2141 microstrip, every input stated) is in
+[`docs/impedance.md`](docs/impedance.md). **Order as controlled impedance** (JLC's
+impedance-control option on that stackup) so JLC re-tunes the etched width to their exact stackup.
 
 **Footprints — all datasheet-verified:** MCX `Samtec_MCX-J-P-H-ST-TH1` (straight, vertical
 **through-hole** jack) matches the Samtec drawing (`docs/datasheets/`, mcx-j-p-x-st-th1-mkt):

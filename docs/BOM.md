@@ -8,16 +8,20 @@ master BOM: [`BOM.csv`](BOM.csv). Per-board fab BOMs live in each
 All four boards share the **same QSE-040 socket and mechanical**; they differ only in the
 coax jack (one jack type per board). Each board = **1× QSE-040 + 25× coax jack + 4× M3 hole**.
 
+**Designators:** the detector socket is **J5** (upstream mapping); the 25 coax jacks are
+**J6…J30** (K0→J6 … K23→J29, IV→J30). Each channel identity (K0…K23, IV) is a silkscreen
+label next to its jack; mounting-hole designators (MH1…) are hidden on silk.
+
 ## Master BOM
 
-| Item | Manufacturer | MPN | Digi-Key | Qty/board | Board(s) | Notes |
-|------|--------------|-----|----------|:---------:|:--------:|-------|
-| J5 socket | Samtec | QSE-040-01-L-D-A | SAM8124-ND | 1 | A B C D | detector-side socket; mounts on the back face. Plain (tray) suffix — do **not** sub `-RT1` (needs retention holes we don't have) |
-| MCX jack | Samtec | MCX-J-P-H-ST-TH1 | SAM8944-ND | 25 | A | straight (vertical) **through-hole**, 50 Ω, 6 GHz — **confirmed orderable** (Active, verified 2026-07-15). THT signal pin plated through all layers ⇒ B.Cu channel escape lands on it with no face-change via (zero signal vias) |
-| SMA jack | Amphenol RF | 901-143-6RFX | ARFX1232-ND | 25 | B | right-angle through-hole, 50 Ω |
-| U.FL jack | Hirose | U.FL-R-SMT-1(10) | — | 25 | C | SMT, 50 Ω — **≤60 V** working voltage (low-bias channels only) |
-| SMP jack | Amphenol RF | SMP-MSLD-PCS-20 | — | 25 | D | vertical SMT, 50 Ω, 4.08 mm max height |
-| Mounting hole | — | — | — | 4 | A B C D | M3 non-plated (mechanical) |
+| Item | Manufacturer | MPN | Digi-Key | LCSC | Qty/board | Board(s) | Notes |
+|------|--------------|-----|----------|------|:---------:|:--------:|-------|
+| J5 socket | Samtec | QSE-040-01-L-D-A | SAM8124-ND | C3652705 (-TR; info) | 1 | A B C D | detector-side socket; mounts on the back face. Plain (tray) suffix — do **not** sub `-RT1` (needs retention holes we don't have). LCSC `C3652705` is the tape-and-reel `-RT1` variant, listed for reference only — order the plain suffix from Digi-Key |
+| MCX jack | Samtec | MCX-J-P-H-ST-TH1 | SAM8944-ND | n/a — not LCSC-stocked; hand-solder | 25 | A | straight (vertical) **through-hole**, 50 Ω, 6 GHz — **confirmed orderable** (Active, verified 2026-07-15). THT signal pin plated through all layers ⇒ B.Cu channel escape lands on it with no face-change via (zero signal vias). Not stocked at LCSC (only the wrong-impedance 75 Ω `MCX7-J-P-H-ST-TH1` / wrong-series `MMCX-J-P-H-ST-TH1` appear) ⇒ hand-solder |
+| SMA jack | Amphenol RF | 901-143-6RFX | ARFX1232-ND | — | 25 | B | right-angle through-hole, 50 Ω |
+| U.FL jack | Hirose | U.FL-R-SMT-1(10) | — | — | 25 | C | SMT, 50 Ω — **≤60 V** working voltage (low-bias channels only) |
+| SMP jack | Amphenol RF | SMP-MSLD-PCS-20 | — | — | 25 | D | vertical SMT, 50 Ω, 4.08 mm max height |
+| Mounting hole | — | — | — | — | 4 | A B C D | M3 non-plated (mechanical) |
 
 A full 96-channel system uses 4 boards of one chosen variant → **4× QSE-040 + 100× the
 chosen jack** per system.
@@ -33,7 +37,7 @@ CSV + wizard walkthrough) is in [`../order/`](../order/README.md).
 |---|------|----------|--------|----:|-----:|----:|-------|
 | 1 | MCX jack `MCX-J-P-H-ST-TH1` (through-hole) | **SAM8944-ND** | DigiKey | 120 | $4.21 (@100) | $505.20 | ~11,568 (breaks: 1/$6.14 · 50/$5.17 · 100/$4.21) |
 | 2 | QSE socket `QSE-040-01-L-D-A` | **SAM8124-ND** | DigiKey | 5 | $7.27 | $36.35 | 2,021 (Mouser `200-QSE04001LDA` cheaper at $5.59 → $27.95, 2,589 stk — aggregator-sourced, reconfirm in cart) |
-| 3 | PCB `board-A-mcx-fab.zip` (75.0 × 157.2 mm, 4-layer, controlled impedance) | — | JLCPCB | 5 | — | ~$85–95 ENIG | 118 cm² (under JLC's 650 cm² large-board surcharge); 3–4 day build, +~$28 DHL |
+| 3 | PCB `board-A-mcx-fab.zip` (75.0 × 125.2 mm, 4-layer, controlled impedance) | — | JLCPCB | 5 | — | ~$85–95 ENIG | ~94 cm² (under JLC's 650 cm² large-board surcharge); 3–4 day build, +~$28 DHL |
 | 4 | SMA-to-TRB (triax) coax adapter, Cinch `3-0347-9` — **for IV out**, 1 per board | **1097-1372-ND** | DigiKey | 4 | $72.41 | $289.64 | 147 |
 | 5 | M3 screws/standoffs (mounting) | — | generic | 16+ | — | — | lab stock |
 
@@ -54,10 +58,15 @@ SAM8124-ND, 5
   stackup."*
 - JLCPCB: 4-layer → Specify Stackup **JLC04161H-7628** (0.2104 mm 7628 prepreg to the
   adjacent inner GND plane, Dk 4.4) → Impedance Control **±10 % (±5 Ω at ≤50 Ω)**. Their
-  calculator's 50 Ω width on that stackup is ~0.325 mm — our trace is at nominal.
+  calculator's 50 Ω width on that stackup is ~0.325 mm — our trace is at nominal. Full
+  derivation (JLC calculator RS_50 = 0.3244 mm + KiCad TransLine / IPC-2141 microstrip
+  formula, every input stated): [`impedance.md`](impedance.md).
 - **ENIG recommended** over HASL: flatter pads for the 0.8 mm-pitch QSE-040.
-- **Mixed assembly:** the THT MCX jacks are hand/selective-soldered (not reflow); the SMD
-  QSE-040 is reflowed.
+- **JLCPCB SMT assembly is NOT viable — order Board A fab-only + hand-solder.** The exact
+  50 Ω THT MCX (`MCX-J-P-H-ST-TH1`) is **not stocked at LCSC** (LCSC lists only the
+  wrong-impedance 75 Ω `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1` — neither
+  acceptable), so the jacks cannot be JLC-placed. Hand-solder the THT MCX jacks (not reflow);
+  the SMD QSE-040 can be reflowed or hand-soldered. See the **LCSC** column in the master BOM.
 - Jack/socket caveats: MCX `-H-ST-TH1` is the through-hole part — do **not** cross with the
   75 Ω `MCX7-J-P-H-ST-TH1` (SAM8945-ND) or the smaller `MMCX-J-P-H-ST-TH1` (SAM10617-ND). The
   right-angle THT `MCX-J-P-H-RA-TH1` (SAM10607-ND) is a valid mechanical alternative but needs

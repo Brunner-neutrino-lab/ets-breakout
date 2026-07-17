@@ -240,3 +240,40 @@ If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 > `tools/import_ses.py`, `tools/tie_islands.py`; `finalize_board.py` gained `setup`/`stitch` modes.
 > Unchanged: QSE socket `QSE-040-01-L-D-A` (SAM8124-ND), IV-out Cinch 3-0347-9 (1097-1372-ND), and
 > `pinout.py` as the single source of truth.
+
+> **Update 2026-07-17 — engineer review: balanced pin-ordered re-layout, J-designators, impedance doc, LCSC check.**
+> An engineer review pass reworked Board A's layout, designators, and documentation without changing
+> the electrical design, part, or fab vendor.
+>
+> **Why the old routes bundled/wrapped:** the previous **8/16 planar** split (from the 2026-07-15
+> redo) was lopsided — the east edge carried 16 jacks + IV against 8 on the west, making the board
+> long (75 × 157 mm) and leaving the FreeRouting autoroute to bundle escapes along the crowded edge.
+> **The balanced fix:** the 24 channels are now split **~12/13** and, crucially, **each jack is
+> ordered by its QSE pin** so every *native* escape is a **straight line**. West edge = **12 jacks**:
+> K8–K15 (native, straight) + K16, K17 (wrap the top corner) + K6, K7 (wrap the bottom corner). East
+> edge = **13 jacks**: K18–K23, IV, K0–K5. The 4 spilled channels **wrap around the connector ends on
+> B.Cu (2 per corner)** rather than crossing the connector, so the design is still **zero signal vias,
+> all 25 nets on B.Cu, DRC 0/0**. Balancing shrank the board 32 mm to **75.0 × 125.2 mm**. The old
+> lopsided 8/16 is retained only as the `gen_board.py` `SPLIT="planar"` option; `SPLIT="balanced"` is
+> now the default.
+>
+> **Designators K → J:** jack references were the channel names (K0..K23 / IV); those are relay
+> designators (K = relay). Jacks are now proper connector references (**J**) — **J6..J30**
+> (K0→J6 … K23→J29, IV→J30), while the detector socket keeps its upstream **J5**. The channel identity
+> (K0..K23, IV) is now a **silkscreen label** printed next to each jack, and the mounting-hole
+> designators (MH1..) are **hidden on silk**.
+>
+> **Impedance derivation documented:** trace width is **unchanged at 0.325 mm**, but a full derivation
+> now lives in **`docs/impedance.md`** — JLCPCB calculator RS_50 = 0.3244 mm plus the KiCad TransLine /
+> IPC-2141 microstrip formula, every input stated. 0.325 mm is JLC's own published 50 Ω single-ended
+> width for the `JLC04161H-7628` stackup; order as controlled impedance.
+>
+> **LCSC / assembly — SMT not viable:** **JLCPCB SMT assembly is NOT viable** for this board; it stays
+> **fab-only + hand-solder**. The exact 50 Ω THT MCX (`MCX-J-P-H-ST-TH1`) is absent from LCSC — LCSC
+> stocks only the wrong-impedance 75 Ω `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1`,
+> neither acceptable. A new **LCSC** column is populated honestly in the fab BOM (`make_bom.py` now
+> emits it): MCX = "n/a — not LCSC-stocked; hand-solder"; QSE = "C3652705 (-TR variant; info only)";
+> the Cinch cable adapter = n/a (not board-mounted). **Unchanged:** the THT part (Samtec
+> `MCX-J-P-H-ST-TH1` / DigiKey SAM8944-ND), footprint `Samtec_MCX-J-P-H-ST-TH1`, JLCPCB-only fab,
+> quantities (MCX 120, QSE 5, IV adapter 4), DigiKey subtotal $831.19, system ≈ $950, QSE = SAM8124-ND,
+> IV adapter Cinch 3-0347-9 / 1097-1372-ND, and `pinout.py` as the single source of truth.
