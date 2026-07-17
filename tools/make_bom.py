@@ -9,16 +9,19 @@ import collections
 import pcbnew
 
 # footprint lib name -> (description, manufacturer, MPN, Digi-Key, LCSC)
-# LCSC is informational only: JLCPCB SMT assembly is NOT viable for this board (the 50 ohm
-# THT MCX is absent from LCSC; only a 75 ohm MCX7 or a different-series MMCX are listed), so
-# the connectors are hand-soldered. See docs/BOM.md.
+# LCSC column enables an optional JLCPCB mixed SMT(QSE)+THT(MCX) assembled build: QSE plain -A
+# = C3652741 (exact Samtec part), MCX = C5137197 (BAT Wireless BWMCX-KE, a generic 50 ohm THT
+# MCX jack; alt C49118404). Both are JLC-library "Extended" parts and the MCX needs JLC's
+# through-hole assembly add-on. GATE before an assembled order: confirm the BWMCX-KE land
+# pattern matches our footprint (centre signal + 4 grounds on 5.08 mm, drills 1.10/1.40) --
+# not dimensionally verified. Baseline stays fab-only + hand-solder from DigiKey. See docs/BOM.md.
 PARTS = {
     "SAMTEC_QSE-040-01-X-D-A":
         ("QSE-040 board-to-board socket (mates detector QTE-040)", "Samtec", "QSE-040-01-L-D-A",
-         "SAM8124-ND", "C3652705 (-TR variant; hand-solder)"),
+         "SAM8124-ND", "C3652741"),
     "Samtec_MCX-J-P-H-ST-TH1":
         ("MCX jack, straight (vertical) through-hole, 50 ohm", "Samtec", "MCX-J-P-H-ST-TH1",
-         "SAM8944-ND", "n/a - not LCSC-stocked; hand-solder"),
+         "SAM8944-ND", "C5137197 (BWMCX-KE equiv; confirm footprint)"),
     "SMA_Amphenol_901-143_Horizontal":
         ("SMA jack, right-angle through-hole, 50 ohm", "Amphenol RF", "901-143-6RFX", "ARFX1232-ND", ""),
     "U.FL_Hirose_U.FL-R-SMT-1_Vertical":

@@ -115,12 +115,15 @@ vias** (GND stitching + island-tie vias only; all 25 nets on B.Cu).
 
 Each fab zip = gerbers (4 copper + mask/silk/edge) + Excellon drill + position CSV + BOM CSV.
 
-**Assembly:** Board A is **fab-only + hand-solder** — JLCPCB SMT assembly is **not viable**
-because the exact 50 Ω through-hole MCX (`MCX-J-P-H-ST-TH1`) is not LCSC-stocked (LCSC lists
-only the wrong-impedance 75 Ω `MCX7-J-P-H-ST-TH1` or the wrong-series `MMCX-J-P-H-ST-TH1` —
-neither acceptable). The fab BOM (`make_bom.py`) now emits an **LCSC column**, populated
-honestly: MCX = "n/a – not LCSC-stocked; hand-solder"; QSE = "C3652705 (-TR variant; info
-only)"; the Cinch IV cable adapter = n/a (not board-mounted). Fab is **JLCPCB only**.
+**Assembly:** the default build is **fab-only + hand-solder** (exact Samtec parts from
+DigiKey). An optional **JLCPCB assembled build is possible** as a mixed SMT (QSE) + THT (MCX)
+job using LCSC parts: QSE-040 = **C3652741** (exact Samtec, plain -A), MCX = **C5137197**
+(BAT Wireless `BWMCX-KE`, a generic 50 Ω THT MCX jack; alt **C49118404**). Both are JLC-library
+*Extended* parts and the 25 THT MCX jacks need JLC's through-hole/wave-solder assembly add-on.
+**Gate before an assembled order:** confirm the `BWMCX-KE` land pattern matches our footprint
+(centre signal + 4 grounds on 5.08 mm, drills 1.10/1.40) — it's a generic equivalent, not
+dimensionally verified. The fab BOM (`make_bom.py`) carries these in an **LCSC column**. Fab is
+**JLCPCB only**.
 
 **Impedance:** channel traces are **0.325 mm** wide (unchanged) ≈ 50 Ω single-ended microstrip
 on the JLCPCB **JLC04161H-7628** 4-layer 1.6 mm stack (0.2104 mm 7628 prepreg to the adjacent
