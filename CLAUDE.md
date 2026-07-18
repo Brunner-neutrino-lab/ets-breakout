@@ -92,8 +92,10 @@ pcbnew gotchas (shared with the SMP-feedthrough project):
   bottom corner); east = K18-K23, IV, K0-K5. The 4 spilled channels **wrap around the connector
   ends on B.Cu** (2 per corner) — still a single-layer B.Cu fan with **zero connector crossings
   and zero signal vias** (the through-hole MCX signal pin is plated through every layer, so the
-  B.Cu escape lands on it with no face-change via). Balancing shrank the board 75×157 → **75.0 ×
-  125.2 mm** (−32 mm). FreeRouting (`export_dsn.py` → FreeRouting v2.2.4 → `import_ses.py`) does
+  B.Cu escape lands on it with no face-change via). The wrapped jacks are placed in **reversed
+  pin order** (wrapping a corner reverses the fan sense, so the two arcs per corner nest without
+  crossing — engineer fix, `gen_board.py` reproduces it). Balancing shrank the board 75×157 →
+  **75.0 × 125.2 mm** (−32 mm). FreeRouting (`export_dsn.py` → FreeRouting v2.2.4 → `import_ses.py`) does
   the autoroute. The old lopsided 8/16 fan is retained as the `gen_board` `SPLIT="planar"`
   option; `SPLIT="balanced"` is the default for Board A.
 - **Boards B/C/D routing** = the deterministic router: escape past the QSE pads → one

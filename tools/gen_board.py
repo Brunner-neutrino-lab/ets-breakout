@@ -164,9 +164,12 @@ class Builder:
             clusters = {big_side: sorted(big_keep, key=yk), small_side: sorted(small, key=yk)}
             # IV inline on its native edge, at its pin-y rank (still a straight route)
             clusters[iv_side] = sorted(clusters[iv_side] + ["IV"], key=yk)
-            # small edge, top->bottom: top-corner wraps, native fan (pin order), bottom wraps
-            clusters[small_side] = (sorted(top_spill, key=yk) + clusters[small_side]
-                                    + sorted(bot_spill, key=yk))
+            # small edge, top->bottom: top-corner wraps, native fan (pin order), bottom wraps.
+            # The wrapped jacks are placed in REVERSED pin order: wrapping around a corner
+            # reverses the fan sense, so the pin nearest the corner takes the jack furthest from
+            # it -> the two arcs per corner nest without crossing (engineer fix, 2026-07-17).
+            clusters[small_side] = (sorted(top_spill, key=yk, reverse=True) + clusters[small_side]
+                                    + sorted(bot_spill, key=yk, reverse=True))
             self.clusters = clusters
         else:  # "planar": each jack on its own pin column's edge (lopsided, zero wrap)
             self.clusters = {"west": west_col, "east": east_col}

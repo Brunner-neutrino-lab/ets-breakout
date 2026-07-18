@@ -282,3 +282,17 @@ If the manager wants the boards rebuilt from scratch to confirm reproducibility:
 > `MCX-J-P-H-ST-TH1` / DigiKey SAM8944-ND), footprint `Samtec_MCX-J-P-H-ST-TH1`, JLCPCB-only fab,
 > quantities (MCX 120, QSE 5, IV adapter 4), DigiKey subtotal $831.19, system ≈ $950, QSE = SAM8124-ND,
 > IV adapter Cinch 3-0347-9 / 1097-1372-ND, and `pinout.py` as the single source of truth.
+
+> **Update 2026-07-18 — engineer's routing/placement cleanup + generator reproduces it.**
+> The engineer opened Board A in the KiCad GUI, cleaned up the routing, and adjusted the MCX
+> placement (commit `697d0fa`), but did not regenerate the fab. Reviewed: the only placement
+> change was **swapping each wrap pair** — top corner K17↔K16 (J23/J22), bottom corner K7↔K6
+> (J13/J12) — so the two arcs per corner nest without crossing; re-routed to 101 tracks, still
+> **0 signal vias, all B.Cu, DRC 0/0**, 75×125 mm, netclass width 0.325 intact (GUI did not
+> flatten the `.kicad_pro`). **Fab regenerated from the engineer's board** (gerbers/drill/pos/
+> BOM/zips) so it matches what ships — his board is preserved byte-for-byte. **`gen_board.py`
+> updated to reproduce the swap**: the wrapped (spilled) channels are now placed in *reversed*
+> pin order (wrapping a corner reverses the fan sense), which regenerates his exact placement
+> (verified: all 4 wrapped jacks land at identical coordinates) and FreeRouting on it yields an
+> equivalent clean board (DRC 0/0, 0 vias). So the single-source-of-truth pipeline reproduces
+> the engineer's design; the committed `.kicad_pcb` remains his hand-finished version.
