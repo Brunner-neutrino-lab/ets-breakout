@@ -12,8 +12,25 @@ see [`../docs/BOM.md`](../docs/BOM.md) §Purchase order.
 
 | File | Use |
 |------|-----|
-| `board-A-mcx-jlcpcb.zip` | Upload to JLCPCB quote wizard (gerbers + drill, nothing else needed) |
-| `digikey-bom-connectors.csv` | Upload to DigiKey myLists (or use the quick-add lines below) |
+| `board-A-mcx-jlcpcb.zip` | Gerbers + drill — upload to the JLCPCB quote wizard (both order paths) |
+| `digikey-bom-connectors.csv` | **Path A (default, hand-solder):** upload to DigiKey myLists (or quick-add below) |
+| `board-A-mcx-jlc-bom.csv` | **Path B (optional, JLC assembly):** the JLCPCB BOM (LCSC part numbers) |
+| `board-A-mcx-jlc-cpl.csv` | **Path B:** the JLCPCB pick-and-place (CPL) |
+
+**Two ways to build this — pick one:**
+- **Path A — bare PCB fab + hand-solder (default).** JLCPCB fabricates the boards
+  (`board-A-mcx-jlcpcb.zip`); the connectors come from DigiKey (`digikey-bom-connectors.csv`)
+  and are hand/selective-soldered. Exact Samtec parts, footprint verified. This is Orders 1 + 2
+  below.
+- **Path B — JLCPCB assembled (optional).** Same gerber upload, then turn ON "PCB Assembly" and
+  upload **`board-A-mcx-jlc-bom.csv`** (BOM) + **`board-A-mcx-jlc-cpl.csv`** (CPL). JLC sources
+  from LCSC (QSE `C3652741`, MCX `C5137197`) and places all 26 connectors — a mixed job: SMD QSE
+  on the bottom, 25 THT MCX on the top (needs JLC's through-hole assembly add-on). **Gate before
+  ordering:** the MCX LCSC part (`C5137197`, BAT Wireless BWMCX-KE) is a *generic* 50 Ω THT MCX —
+  confirm its land pattern (centre signal + 4 grounds on 5.08 mm, drills 1.10/1.40) and pin-1
+  rotation against its drawing; if it deviates, adjust the footprint or fall back to Path A.
+  (The DigiKey/Samtec files are the DigiKey-sourced hand-solder BOM — do **not** upload them to
+  the JLC assembly step, or JLC reads it as DigiKey sourcing.)
 
 ---
 

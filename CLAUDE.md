@@ -81,6 +81,7 @@ tools/fill_zones.py <pcb>              # fill GND pours (SEPARATE pass)
 kicad-cli pcb drc <pcb>
 
 kicad-cli pcb export gerbers|drill|pos ... ; tools/make_bom.py <pcb> <csv>   # fab outputs (both flows)
+tools/make_jlc.py <pos.csv> order/     # JLCPCB assembly BOM (LCSC) + CPL (pick-and-place)
 ```
 
 pcbnew gotchas (shared with the SMP-feedthrough project):
@@ -112,7 +113,7 @@ pcbnew gotchas (shared with the SMP-feedthrough project):
 ```
 pinout.py                      SINGLE SOURCE OF TRUTH (QSE-040 J5 pin->net + breakout list)
 tests/test_pinout.py           sanity + self-consistency checks (run: python tests/test_pinout.py)
-tools/  gen_board.py  finalize_board.py(setup/stitch)  export_dsn.py  import_ses.py  fill_zones.py  tie_islands.py  make_bom.py  gen_schematic.py
+tools/  gen_board.py  finalize_board.py(setup/stitch)  export_dsn.py  import_ses.py  fill_zones.py  tie_islands.py  make_bom.py  make_jlc.py  gen_schematic.py
 lib/ets-breakout.pretty/       5 datasheet-verified footprints (QSE-040, MCX, SMA, U.FL, SMP)
 lib/ets-breakout.kicad_sym     5 schematic symbols (reference-only; project builds from pinout.py)
 models/                        3D STEP models + README (QSE/U.FL/SMP present; SMA + through-hole MCX = gaps)
@@ -121,7 +122,7 @@ docs/BOM.md  docs/BOM.csv       consolidated master BOM + CAD-asset matrix (per-
 docs/schematic/                REFERENCE schematic for human review (generated from pinout.py; netlist-verified)
 docs/session-report.md         development history / decisions / rationale
 boards/board-{A-mcx,B-sma,C-ufl,D-smp}/   .kicad_pcb/.kicad_pro + routed-top.pdf + fab/ + *-fab.zip
-order/                         purchase handover package: JLCPCB upload zip + DigiKey BOM CSV + wizard walkthrough
+order/                         purchase handover: JLCPCB gerber zip + DigiKey hand-solder BOM + JLC-assembly BOM/CPL + walkthrough
 reference/                     read-only upstream snapshot (de-gitted) + UPSTREAM.md
 ```
 
